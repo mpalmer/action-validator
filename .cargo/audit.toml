@@ -1,0 +1,3 @@
+[advisories]
+# Transitive dependencies, vulnerable code not invoked
+ignore = ["RUSTSEC-2020-0071", "RUSTSEC-2020-0159"]
