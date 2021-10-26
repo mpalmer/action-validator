@@ -6,6 +6,10 @@ on:
     branches:
       - main
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -32,6 +36,16 @@ jobs:
         with:
           args: -- -Dwarnings
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Shellcheck
+        uses: ludeeus/action-shellcheck@master
+
+      - name: Install shfmt
+        uses: mfinelli/setup-shfmt@v1
+
+      - name: Run shfmt
+        run: shfmt -d bin/*
+
 
   build:
     strategy:

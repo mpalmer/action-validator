@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+github_coordinates="mpalmer/action-validator"
+tool_name="action-validator"
+
+install_tool() {
+	local version=$2
+	local install_path=$3
+	local tmp_download_dir=$4
+	local binary_name=$5
+
+	local platform
+	local bin_install_path="$install_path/bin"
+	local binary_path="$bin_install_path/${binary_name}"
+	local download_url
+	local download_path
+
+	platform=$(get_platform)
+	download_url=$(get_download_url "$version" "$platform" "$binary_name")
+	download_path="$tmp_download_dir/"$(get_filename "$version" "$platform" "$binary_name")
+
+	echo "Downloading [${binary_name}] from ${download_url} to ${download_path}"
+	curl -Lo "$download_path" "$download_url"
+
+	echo "Creating bin directory"
+	mkdir -p "${bin_install_path}"
+
+	echo "Cleaning previous binaries"
+	rm -f "$binary_path" 2>/dev/null || true
+
+	echo "Copying binary"
+	cp "${download_path}" "${binary_path}"
+	chmod +x "${binary_path}"
+}
+
+get_platform() {
+	if [[ "$(uname)" == "Linux" ]]; then
+		echo "linux_amd64"
+	else
+		echo "darwin_amd64"
+	fi
+}
+
+get_filename() {
+	local platform="$1"
+
+	echo "action-validator_${platform}"
+}
+
+get_download_url() {
+	local version="$1"
+	local platform="$2"
+	local binary_name="$3"
+	local filename
+	filename="$(get_filename "$platform")"
+
+	echo "https://github.com/${github_coordinates}/releases/download/v${version}/${filename}"
+}
+
+tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
+trap 'rm -rf "${tmp_download_dir}"' EXIT
+install_tool "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$tmp_download_dir" "${tool_name}"

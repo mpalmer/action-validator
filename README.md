@@ -9,10 +9,22 @@ similar situations.
 
 # Installation
 
-The [GitHub releases]() have some pre-built binaries -- just download and
-put them in your path.  If a binary for your platform isn't available, let me
-know and I'll see what I can figure out.  If you want to build locally, you'll
-need to install a [Rust](https://rust-lang.org) toolchain and then run `cargo build`.
+The [GitHub releases](https://github.com/mpalmer/action-validator/releases)
+have some pre-built binaries -- just download and put them in your path.  If a
+binary for your platform isn't available, let me know and I'll see what I can
+figure out.  If you want to build locally, you'll need to install a
+[Rust](https://rust-lang.org) toolchain and then run `cargo build`.
+
+
+## Using asdf
+
+If you're a proponent of the [asdf tool](https://asdf-vm.com/), then you can
+use that to install and manage `action-validator`:
+
+```
+asdf plugin add action-validator https://github.com/mpalmer/action-validator
+asdf install action-validator
+```
 
 
 # Usage
