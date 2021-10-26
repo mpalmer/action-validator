@@ -5,6 +5,7 @@ authors = ["Matt Palmer <matt@hezmatt.org>"]
 edition = "2018"
 
 [dependencies]
+glob = "0.3"
 structopt = "0.3"
 serde = "1.0"
 serde_json = "1.0"
