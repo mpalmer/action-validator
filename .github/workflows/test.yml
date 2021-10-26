@@ -41,7 +41,7 @@ jobs:
         uses: ludeeus/action-shellcheck@master
 
       - name: Install shfmt
-        uses: mfinelli/setup-shfmt@v1
+        uses: mfinelli/setup-shfmt@master
 
       - name: Run shfmt
         run: shfmt -d bin/*
