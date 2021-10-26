@@ -1,8 +1,11 @@
-use structopt::StructOpt;
 use std::path::PathBuf;
+use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "action-validator", about = "A validator for GitHub Action and Workflow YAML files")]
+#[structopt(
+    name = "action-validator",
+    about = "A validator for GitHub Action and Workflow YAML files"
+)]
 pub struct Config {
     /// Be more verbose
     #[structopt(short, long)]

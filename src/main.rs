@@ -1,6 +1,6 @@
+use action_validator::Config;
 use std::process;
 use structopt::StructOpt;
-use action_validator::Config;
 
 fn main() {
     let config = Config::from_args();
