@@ -1,0 +1,12 @@
+[package]
+name = "action-validator"
+version = "0.1.0"
+authors = ["Matt Palmer <matt@hezmatt.org>"]
+edition = "2018"
+
+[dependencies]
+structopt = "0.3"
+serde = "1.0"
+serde_json = "1.0"
+serde_yaml = "0.8"
+valico = "3.6"
