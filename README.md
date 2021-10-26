@@ -1,0 +1,58 @@
+The `action-validator` is a standalone tool designed to "lint" the YAML files
+used to define GitHub Actions and Workflows.  It ensures that they are well-formed,
+by checking them against published JSON schemas, and it makes sure that any
+globs used in `paths` / `paths-ignore` match at least one file in the repo.
+
+The intended use case for `action-validator` is in Git pre-commit hooks and
+similar situations.
+
+
+# Installation
+
+The [GitHub releases]() have some pre-built binaries -- just download and
+put them in your path.  If a binary for your platform isn't available, let me
+know and I'll see what I can figure out.  If you want to build locally, you'll
+need to install a [Rust]() toolchain and then run `cargo build`.
+
+
+# Usage
+
+Couldn't be simpler: just pass a file to the program:
+
+```
+action-validator .github/workflows/build.yml
+```
+
+Use `action-validator -h` to see additional options.
+
+> ### CAUTION
+>
+> As the intended use-case for `action-validator` is in pre-commit hooks,
+> it assumes that it is being run from the root of the repository.  Glob
+> checking will explode horribly if you run it from a sub-directory of the
+> repo -- or, heaven forfend, outside the repository entirely.
+
+
+# Contributing
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+
+# Licence
+
+Unless otherwise stated, everything in this repo is covered by the following
+copyright notice:
+
+    Copyright (C) 2021  Matt Palmer <matt@hezmatt.org>
+
+    This program is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License version 3, as
+    published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
