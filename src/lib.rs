@@ -7,7 +7,7 @@ pub use crate::config::Config;
 use crate::schemas::{validate_as_action, validate_as_workflow};
 use glob::glob;
 
-pub fn run(config: Config) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let fd = File::open(&config.src)?;
     let doc = parse_src(fd)?;
 
