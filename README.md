@@ -21,9 +21,26 @@ figure out.  If you want to build locally, you'll need to install a
 If you're a proponent of the [asdf tool](https://asdf-vm.com/), then you can
 use that to install and manage `action-validator`:
 
+```shell
+asdf plugin add action-validator
+# or
+asdf plugin add action-validator https://github.com/mpalmer/action-validator.git
 ```
-asdf plugin add action-validator https://github.com/mpalmer/action-validator
-asdf install action-validator
+
+Install/configure action-validator:
+
+```shell
+# Show all installable versions
+asdf list-all action-validator
+
+# Install specific version
+asdf install action-validator latest
+
+# Set a version globally (on your ~/.tool-versions file)
+asdf global action-validator latest
+
+# Now action-validator commands are available
+action-validator --version
 ```
 
 
