@@ -12,6 +12,6 @@ pub struct Config {
     pub verbose: bool,
 
     /// Input file
-    #[structopt(parse(from_os_str))]
+    #[structopt(parse(from_os_str), name = "path_to_action_yaml")]
     pub src: PathBuf,
 }
