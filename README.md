@@ -54,6 +54,68 @@ action-validator .github/workflows/build.yml
 
 Use `action-validator -h` to see additional options.
 
+
+## Pre-commit hook example
+
+Create an executable file in the .git/hooks directory of the target repository: `touch .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit` and paste the following example code:
+
+```bash
+#!/bin/bash
+if [ -d ".github/workflows" ]; then
+  if command -v action-validator >/dev/null 2>&1; then
+    echo "Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator"
+    scan_count=0
+    for action in $(find .github/workflows -name "*.y*ml"); do
+      validate="$(action-validator "$action")"
+      if [ -z "$validate" ]; then
+        echo "✅ $action"
+      else
+        echo "❌ $action"
+        echo "$validate"
+        exit 1
+      fi
+      scan_count=$((scan_count+1))
+    done
+    echo "action-validator scanned $scan_count GitHub Actions found no errors!"
+  else
+    echo "action-validator is not installed."
+    echo "Install with: https://github.com/mpalmer/action-validator"
+    echo "Skipping GitHub Action linting..."
+  fi
+else
+  echo "Found no GitHub Action yaml files. Skipping action-validator linting."
+fi
+```
+
+This script will then run on every commit to the repository, whether the github action yaml files are being committed or not and prevent any commit if there are linting errors.
+
+```
+$ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
+Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator
+✅ .github/workflows/ci.yaml
+✅ .github/workflows/release.yml
+action-validator scanned 2 GitHub Actions found no errors!
+[main c34fda3] Update read-me
+ 1 file changed, 2 insertions(+)
+
+# All action-validator linting errors must be resolved before any commit will succeed.
+$ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
+Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator
+Validation failed: ValidationState {
+    errors: [
+        Properties {
+            path: "",
+            detail: "Additional property 'aname' is not allowed",
+        },
+    ],
+    missing: [],
+    replacement: None,
+}
+❌ .github/workflows/ci.yaml
+Fatal error validating .github/workflows/ci.yaml: validation failed
+ ```
+
+
 > ### CAUTION
 >
 > As the intended use-case for `action-validator` is in pre-commit hooks,
@@ -67,7 +129,7 @@ Use `action-validator -h` to see additional options.
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
-# Licence
+# License
 
 Unless otherwise stated, everything in this repo is covered by the following
 copyright notice:
