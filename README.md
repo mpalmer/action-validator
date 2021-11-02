@@ -54,10 +54,18 @@ action-validator .github/workflows/build.yml
 
 Use `action-validator -h` to see additional options.
 
+> ### CAUTION
+>
+> As the intended use-case for `action-validator` is in pre-commit hooks,
+> it assumes that it is being run from the root of the repository.  Glob
+> checking will explode horribly if you run it from a sub-directory of the
+> repo -- or, heaven forfend, outside the repository entirely.
+
 
 ## Pre-commit hook example
 
-Create an executable file in the .git/hooks directory of the target repository: `touch .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit` and paste the following example code:
+Create an executable file in the .git/hooks directory of the target repository:
+`touch .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit` and paste the following example code:
 
 ```bash
 #!/bin/bash
@@ -87,7 +95,7 @@ else
 fi
 ```
 
-This script will then run on every commit to the repository, whether the github action yaml files are being committed or not and prevent any commit if there are linting errors.
+This script will run on every commit to the target repository, whether the github action yaml files are being committed, or not and prevent any commit if there are linting errors.
 
 ```
 $ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
@@ -114,14 +122,6 @@ Validation failed: ValidationState {
 ❌ .github/workflows/ci.yaml
 Fatal error validating .github/workflows/ci.yaml: validation failed
  ```
-
-
-> ### CAUTION
->
-> As the intended use-case for `action-validator` is in pre-commit hooks,
-> it assumes that it is being run from the root of the repository.  Glob
-> checking will explode horribly if you run it from a sub-directory of the
-> repo -- or, heaven forfend, outside the repository entirely.
 
 
 # Contributing
