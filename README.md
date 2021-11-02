@@ -98,14 +98,6 @@ fi
 This script will run on every commit to the target repository, whether the github action yaml files are being committed, or not and prevent any commit if there are linting errors.
 
 ```
-$ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
-Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator
-✅ .github/workflows/ci.yaml
-✅ .github/workflows/release.yml
-action-validator scanned 2 GitHub Actions found no errors!
-[main c34fda3] Update read-me
- 1 file changed, 2 insertions(+)
-
 # All action-validator linting errors must be resolved before any commit will succeed.
 $ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
 Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator
@@ -121,6 +113,16 @@ Validation failed: ValidationState {
 }
 ❌ .github/workflows/ci.yaml
 Fatal error validating .github/workflows/ci.yaml: validation failed
+
+
+# Fix error and try again
+$ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
+Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator
+✅ .github/workflows/ci.yaml
+✅ .github/workflows/release.yml
+action-validator scanned 2 GitHub Actions found no errors!
+[main c34fda3] Update read-me
+ 1 file changed, 2 insertions(+)
  ```
 
 
