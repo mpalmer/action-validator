@@ -34,6 +34,8 @@ jobs:
         run: |
           mv Cargo.toml Cargo.toml.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
+          mv Cargo.lock Cargo.lock.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
 
       - name: Build
         uses: actions-rs/cargo@v1
