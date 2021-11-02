@@ -89,6 +89,63 @@ The action-validator can be run in a Github action itself, as a pull request job
 This may seem a little redundant (after all, an action has to be valid in order for GitHub to run it), but this job will make sure that all your *other* actions are also valid.
 
 
+## Pre-commit hook example
+
+Create an executable file in the .git/hooks directory of the target repository:
+`touch .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit` and paste the following example code:
+
+```bash
+#!/bin/bash
+if ! command -v action-validator >/dev/null; then
+  echo "action-validator is not installed."
+  echo "Installation instructions: https://github.com/mpalmer/action-validator"
+  exit 1
+fi
+echo "Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator"
+scan_count=0
+for action in $(git diff --cached --name-only --diff-filter=ACM | grep -E '^\.github/(workflows|actions)/.*\.ya?ml$'); do
+  if action-validator "$action"; then
+    echo "✅ $action"
+  else
+    echo "❌ $action"
+    exit 1
+  fi
+  scan_count=$((scan_count+1))
+done
+echo "action-validator scanned $scan_count GitHub Actions and found no errors!"
+```
+
+This script will run on every commit to the target repository, whether the github action yaml files are being committed, or not and prevent any commit if there are linting errors.
+
+```
+# All action-validator linting errors must be resolved before any commit will succeed.
+$ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
+Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator
+Validation failed: ValidationState {
+    errors: [
+        Properties {
+            path: "",
+            detail: "Additional property 'aname' is not allowed",
+        },
+    ],
+    missing: [],
+    replacement: None,
+}
+❌ .github/workflows/ci.yaml
+Fatal error validating .github/workflows/ci.yaml: validation failed
+
+
+# Fix error and try again
+$ echo "" >> README.md && git add README.md && git commit -m "Update read-me"
+Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator
+✅ .github/workflows/ci.yaml
+✅ .github/workflows/release.yml
+action-validator scanned 2 GitHub Actions found no errors!
+[main c34fda3] Update read-me
+ 1 file changed, 2 insertions(+)
+ ```
+
+
 # Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
