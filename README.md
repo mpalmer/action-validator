@@ -86,8 +86,8 @@ if [ -d ".github/workflows" ]; then
     done
     echo "action-validator scanned $scan_count GitHub Actions found no errors!"
   else
-    echo "action-validator is not installed."
-    echo "Install with: https://github.com/mpalmer/action-validator"
+    echo "action-validator is not installed!"
+    echo "Installation instructions at: https://github.com/mpalmer/action-validator"
     echo "Skipping GitHub Action linting..."
   fi
 else
