@@ -1,6 +1,6 @@
 [package]
 name = "action-validator"
-version = "0.1.0"
+version = "0.0.0-git"
 authors = ["Matt Palmer <matt@hezmatt.org>"]
 edition = "2018"
 
