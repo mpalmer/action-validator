@@ -32,7 +32,8 @@ jobs:
         env:
           RELEASE_TAG: ${{ github.ref }}
         run: |
-          sed -i "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml
+          mv Cargo.toml Cargo.toml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
 
       - name: Build
         uses: actions-rs/cargo@v1
