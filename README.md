@@ -131,7 +131,7 @@ action-validator scanned 2 GitHub Actions found no errors!
 Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
-# License
+# Licence
 
 Unless otherwise stated, everything in this repo is covered by the following
 copyright notice:
