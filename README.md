@@ -69,30 +69,25 @@ Create an executable file in the .git/hooks directory of the target repository:
 
 ```bash
 #!/bin/bash
-if [ -d ".github/workflows" ]; then
-  if command -v action-validator >/dev/null 2>&1; then
-    echo "Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator"
-    scan_count=0
-    for action in $(find .github/workflows -name "*.y*ml"); do
-      validate="$(action-validator "$action")"
-      if [ -z "$validate" ]; then
-        echo "✅ $action"
-      else
-        echo "❌ $action"
-        echo "$validate"
-        exit 1
-      fi
-      scan_count=$((scan_count+1))
-    done
-    echo "action-validator scanned $scan_count GitHub Actions found no errors!"
-  else
-    echo "action-validator is not installed!"
-    echo "Installation instructions at: https://github.com/mpalmer/action-validator"
-    echo "Skipping GitHub Action linting..."
-  fi
-else
-  echo "Found no GitHub Action yaml files. Skipping action-validator linting."
+if ! command -v action-validator >/dev/null; then
+  echo "action-validator is not installed."
+  echo "Installation instructions: https://github.com/mpalmer/action-validator"
+  exit 1
 fi
+echo "Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator"
+scan_count=0
+for action in $(git diff --cached --name-only --diff-filter=ACM | grep .github/workflows); do
+  validate="$(action-validator "$action")"
+  if [ -z "$validate" ]; then
+    echo "✅ $action"
+  else
+    echo "❌ $action"
+    echo "$validate"
+    exit 1
+  fi
+  scan_count=$((scan_count+1))
+done
+echo "action-validator scanned $scan_count GitHub Actions found no errors!"
 ```
 
 This script will run on every commit to the target repository, whether the github action yaml files are being committed, or not and prevent any commit if there are linting errors.
