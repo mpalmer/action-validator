@@ -1,4 +1,4 @@
-rust 1.56.0
+rust 1.56.1
 shellcheck 0.7.2
 shfmt 3.3.0
 action-validator 0.1.0
