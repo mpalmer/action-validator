@@ -78,7 +78,7 @@ echo "Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/act
 scan_count=0
 for action in $(git diff --cached --name-only --diff-filter=ACM | grep .github/workflows); do
   validate="$(action-validator "$action")"
-  if [ -z "$validate" ]; then
+  if $validate; then
     echo "✅ $action"
   else
     echo "❌ $action"
