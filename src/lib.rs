@@ -81,6 +81,7 @@ fn validate_globs(globs: &serde_json::Value, path: &str) -> bool {
                 }
                 Err(e) => {
                     eprintln!("Glob {} in {} is invalid: {}", g, path, e);
+                    success = false;
                 }
             };
         }
