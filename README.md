@@ -76,7 +76,7 @@ if ! command -v action-validator >/dev/null; then
 fi
 echo "Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-validator"
 scan_count=0
-for action in $(git diff --cached --name-only --diff-filter=ACM | grep -E "\.github/workflows|actions" | grep -E "\.ya*ml$"); do
+for action in $(git diff --cached --name-only --diff-filter=ACM | grep -E '^\.github/(workflows|actions)/.*\.ya?ml$'); do
   validate="$(action-validator "$action")"
   if $validate; then
     echo "✅ $action"
