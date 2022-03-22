@@ -1,7 +1,6 @@
 name: Example Action Validator
 
 on:
-  push:
   pull_request:
     branches:
       - main
