@@ -69,7 +69,7 @@ If you want to build locally, you'll need to:
 
 Couldn't be simpler: just pass a file to the program:
 
-```
+```shell
 action-validator .github/workflows/build.yml
 ```
 
@@ -81,6 +81,12 @@ Use `action-validator -h` to see additional options.
 > it assumes that it is being run from the root of the repository.  Glob
 > checking will explode horribly if you run it from a sub-directory of the
 > repo -- or, heaven forfend, outside the repository entirely.
+
+
+## In a GitHub Action
+
+The action-validator can be run in a Github action itself, as a pull request job. See the `actions` job in the [QA workflow](https://github.com/mpalmer/action-validator/tree/main/.github/workflows/qa.yml), in this repository, as an example of how to use action-validator + asdf in a GitHub workflow.
+This may seem a little redundant (after all, an action has to be valid in order for GitHub to run it), but this job will make sure that all your *other* actions are also valid.
 
 
 # Contributing
