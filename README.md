@@ -43,12 +43,13 @@ asdf global action-validator latest
 action-validator --version
 ```
 
+The action-validator can be run in a Github action itself, as a pull request job. See the [test github action](.github/workflows/test.yml), in this repository, as an example of how to use action-validator + asdf in a GitHub workflow.
 
 # Usage
 
 Couldn't be simpler: just pass a file to the program:
 
-```
+```shell
 action-validator .github/workflows/build.yml
 ```
 
