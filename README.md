@@ -43,56 +43,17 @@ asdf global action-validator latest
 action-validator --version
 ```
 
+The action-validator can be run in a Github action itself, as a pull request job. See the [test github action](.github/workflows/test.yml), in this repository, as an example of how to use action-validator + asdf in a GitHub workflow.
 
 # Usage
 
 Couldn't be simpler: just pass a file to the program:
 
-```
+```shell
 action-validator .github/workflows/build.yml
 ```
 
 Use `action-validator -h` to see additional options.
-
-## Action to validate your actions
-
-The action-validator can be run in a github action itself as a pull request job. In this [example](.github/workflows/example.yml) the action-validator is installed with the [asdf tool](https://asdf-vm.com/) and lints each file in the .github/workflows/ directory
-
-```yaml
-name: Example Action Validator
-
-on:
-  push:
-  pull_request:
-    branches:
-      - main
-
-defaults:
-  run:
-    shell: bash
-
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      -
-        name: Install action-validator with asdf
-        uses: asdf-vm/actions/install@v1
-        with:
-          tool_versions: |
-            action-validator 0.1.2
-      -
-        name: Lint Actions
-        run: |
-          find .github/workflows -type f \( -iname \*.yaml -o -iname \*.yml \) \
-            | xargs -I {} action-validator --verbose {}
-
-```
 
 > ### CAUTION
 >
