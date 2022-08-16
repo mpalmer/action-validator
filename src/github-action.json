@@ -94,7 +94,7 @@
               },
               "if" : {
                 "$comment": "https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runsstepsif",
-                "description": "https://github.blog/changelog/2021-11-09-github-actions-conditional-execution-of-steps-in-actions/",
+                "description": "The condition of the composite run step.",
                 "type": "string"
               },
               "uses": {
