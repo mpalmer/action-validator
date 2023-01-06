@@ -1,7 +1,7 @@
 [package]
 name = "action-validator"
 description = "Validator for GitHub action and workflow YAML files"
-license = "GPLv3"
+license = "GPL-3.0-only"
 homepage = "https://github.com/mpalmer/action-validator"
 repository = "https://github.com/mpalmer/action-validator"
 include = [
