@@ -9,11 +9,20 @@ similar situations.
 
 # Installation
 
+We have many ways to install `action-validator`.
+
+
+## Pre-built binaries
+
 The [GitHub releases](https://github.com/mpalmer/action-validator/releases)
 have some pre-built binaries -- just download and put them in your path.  If a
 binary for your platform isn't available, let me know and I'll see what I can
-figure out.  If you want to build locally, you'll need to install a
-[Rust](https://rust-lang.org) toolchain and then run `cargo build`.
+figure out.
+
+
+## Using cargo
+
+If you've got a Rust toolchain installed, running `cargo install action-validator` should give you the latest release.
 
 
 ## Using asdf
@@ -42,6 +51,18 @@ asdf global action-validator latest
 # Now action-validator commands are available
 action-validator --version
 ```
+
+## Building from the repo
+
+If you want to build locally, you'll need to:
+
+1. Checkout the git repository somewhere;
+
+1. Grab the `SchemaStore` submodule, by running `git submodule init`;
+
+1. Install a [Rust](https://rust-lang.org) toolchain; and then
+
+1. run `cargo build`.
 
 
 # Usage
