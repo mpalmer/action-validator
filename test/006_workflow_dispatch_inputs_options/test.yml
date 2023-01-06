@@ -1,0 +1,23 @@
+name: Test
+
+'on':
+  workflow_dispatch:
+    inputs:
+      ApplicationName:
+        description: 'Application name'
+        required: true
+        type: choice
+        options:
+          - SomeName
+          - SomeOtherName
+          - YetMoarNames
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build
+        uses: actions/build@v1
