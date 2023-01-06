@@ -1,0 +1,57 @@
+# From https://github.com/umccr/reusable-github-actions/blob/45fa579dfaceeec903d1b01396c552fc1b72ace9/.github/workflows/rust-check.yaml,
+# re: https://github.com/mpalmer/action-validator/issues/14
+on:
+  workflow_call:
+    inputs:
+      rust-version:
+        type: string
+        required: false
+        default: nightly
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ inputs.rust-version }}
+          override: true
+          components: rustfmt, clippy
+      - name: Set up cargo cache
+        uses: actions/cache@v3
+        continue-on-error: false
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+
+      - name: Format
+        uses: actions-rs/cargo@v1
+          with:
+            command: fmt
+            args: --all -- --check
+      - name: Clippy
+        uses: actions-rs/cargo@v1
+          with:
+            command: clippy
+            args: -- -D warnings
+      - name: Install
+        uses: actions-rs/cargo@v1
+          with:
+            command: install
+            args: cargo-deny cargo-outdated cargo-udeps cargo-audit cargo-pants
+      - name: Check
+        run: |
+          #cargo deny check
+          cargo outdated
+          #cargo udeps
+          #cargo audit
+          cargo pants
