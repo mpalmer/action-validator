@@ -1,5 +1,5 @@
+use clap::StructOpt;
 use std::path::PathBuf;
-use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(

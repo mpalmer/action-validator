@@ -1,9 +1,9 @@
 use action_validator::Config;
+use clap::Parser;
 use std::process;
-use structopt::StructOpt;
 
 fn main() {
-    let config = Config::from_args();
+    let config = Config::parse();
 
     if let Err(e) = action_validator::run(&config) {
         println!(
