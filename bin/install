@@ -37,9 +37,27 @@ install_tool() {
 
 get_platform() {
 	if [[ "$(uname)" == "Linux" ]]; then
-		echo "linux_amd64"
-	else
+		if [[ "$(uname -m)" == "x86_64" ]]; then
+			echo "linux_amd64"
+		elif [[ "$(uname -m)" == "aarch64" ]]; then
+			echo "linux_arm64"
+		else
+			echo "Unknown or unsupported Linux machine type $(uname -m)" >&2
+			exit 1
+		fi
+	elif [[ "$(uname)" == "Darwin" ]]; then
 		echo "darwin_amd64"
+		if [[ "$(uname -m)" == "x86_64" ]]; then
+			echo "darwin_amd64"
+		elif [[ "$(uname -m)" == "arm64" ]]; then
+			echo "darwin_arm64"
+		else
+			echo "Unknown or unsupported macOS machine type $(uname -m)" >&2
+			exit 1
+		fi
+	else
+		echo "Unknown or unsupported platform $(uname)" >&2
+		exit 1
 	fi
 }
 
