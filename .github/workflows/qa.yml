@@ -46,7 +46,7 @@ jobs:
         uses: mfinelli/setup-shfmt@master
 
       - name: Run shfmt
-        run: shfmt -d bin/*
+        run: shfmt -d bin/* test/run
 
   build:
     strategy:
