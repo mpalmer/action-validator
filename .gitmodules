@@ -1,0 +1,3 @@
+[submodule "src/schemastore"]
+	path = src/schemastore
+	url = https://github.com/SchemaStore/schemastore
