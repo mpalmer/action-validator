@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+readonly cmd="../target/debug/action-validator"
+
+if ! [ -x "$cmd" ]; then
+	echo "No action-validator to test; have you run 'cargo build' lately?" >&2
+	exit 1
+fi
+
+for t in [0-9]*; do
+	expected_stdout="$(cat "$t/stdout" 2>/dev/null || true)"
+	expected_stderr="$(cat "$t/stderr" 2>/dev/null || true)"
+	expected_exitcode="$(cat "$t/exitcode" 2>/dev/null || echo 0)"
+
+	dir="$(mktemp -d)"
+	trap "rm -rf '$dir'" EXIT
+
+	failed=n
+	rv=0
+
+	testfile="$(ls "$t"/*.yml)"
+
+	"$cmd" "$testfile" >"$dir/stdout" 2>"$dir/stderr" || rv="$?"
+	stdout="$(cat $dir/stdout)"
+	stderr="$(cat $dir/stderr)"
+
+	if [ "$rv" != "$expected_exitcode" ]; then
+		echo "Test $t exited with unexpected code: expected $expected_exitcode, got $rv" >&2
+		failed=y
+	fi
+
+	if [ "$stdout" != "$expected_stdout" ]; then
+		echo "Test $t produced unexpected stdout:" >&2
+		diff -u <(echo "$expected_stdout") <(echo "$stdout") >&2 || true
+		failed=y
+	fi
+
+	if [ "$stderr" != "$expected_stderr" ]; then
+		echo "Test $t produced unexpected stderr:" >&2
+		diff -u <(echo "$expected_stderr") <(echo "$stderr") >&2 || true
+		failed=y
+	fi
+
+	rm -rf "$dir"
+	trap "" EXIT
+
+	if [ "$failed" = "y" ]; then
+		exit 1
+	fi
+done
+
+echo "All tests passed."

@@ -1,0 +1,1 @@
+Glob "004_bad_globs/*.txt" in on.push.paths does not match any files

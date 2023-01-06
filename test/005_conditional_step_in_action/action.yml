@@ -1,0 +1,28 @@
+name: 'Build something conditionally'
+description: |
+  Build something repeatable.
+
+inputs:
+  role:
+    description: |
+      The role of what's being built.
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "setup"
+      shell: bash
+      run: |
+        ./setup
+
+    - name: "test"
+      shell: bash
+      if: ${{ inputs.role }} == 'tester'
+      run: |
+        ./test
+
+    - name: "build"
+      shell: bash
+      run: |
+        ./build ${{ inputs.role }}
