@@ -1,4 +1,4 @@
-name: Test
+name: Quality Control
 
 on:
   push:
@@ -104,6 +104,8 @@ jobs:
 
       - name: Build
         uses: actions-rs/cargo@v1
+        with:
+          command: build
 
       - name: Run Testsuite
         working-directory: 'test'
