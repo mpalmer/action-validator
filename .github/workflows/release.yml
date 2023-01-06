@@ -1,11 +1,13 @@
-name: Upload binaries to release
+name: Upload release artifacts
 
 on:
   release:
     types: [created]
 
+  workflow_dispatch:
+
 jobs:
-  release:
+  binaries:
     strategy:
       matrix:
         include:
@@ -52,3 +54,35 @@ jobs:
           tag: ${{ github.ref }}
           file: target/release/action-validator
           asset_name: ${{ matrix.asset_name }}
+
+  crate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          default: true
+
+      - name: Set Cargo.toml version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref }}
+        run: |
+          mv Cargo.toml Cargo.toml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
+          mv Cargo.lock Cargo.lock.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
+
+      - name: Publish crate
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+        run: |
+          cargo publish --allow-dirty
