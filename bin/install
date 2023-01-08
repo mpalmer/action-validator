@@ -46,7 +46,6 @@ get_platform() {
 			exit 1
 		fi
 	elif [[ "$(uname)" == "Darwin" ]]; then
-		echo "darwin_amd64"
 		if [[ "$(uname -m)" == "x86_64" ]]; then
 			echo "darwin_amd64"
 		elif [[ "$(uname -m)" == "arm64" ]]; then
