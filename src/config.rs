@@ -1,17 +1,18 @@
-use clap::StructOpt;
+use clap::Parser;
 use std::path::PathBuf;
 
-#[derive(StructOpt, Debug)]
-#[structopt(
+#[derive(Parser, Debug)]
+#[command(
     name = "action-validator",
-    about = "A validator for GitHub Action and Workflow YAML files"
+    about = "A validator for GitHub Action and Workflow YAML files",
+    version
 )]
 pub struct Config {
     /// Be more verbose
-    #[structopt(short, long)]
+    #[arg(short, long)]
     pub verbose: bool,
 
     /// Input file
-    #[structopt(parse(from_os_str), name = "path_to_action_yaml")]
+    #[arg(name = "path_to_action_yaml")]
     pub src: PathBuf,
 }
