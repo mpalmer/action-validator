@@ -49,7 +49,7 @@ asdf install action-validator latest
 asdf global action-validator latest
 
 # Now action-validator commands are available
-action-validator --version
+action-validator --help
 ```
 
 ## Building from the repo
