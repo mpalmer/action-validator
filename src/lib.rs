@@ -124,4 +124,3 @@ fn validate_job_needs(doc: &serde_json::Value) -> bool {
 
     success
 }
-
