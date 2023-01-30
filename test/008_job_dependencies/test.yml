@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "setup"
+  check:
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - run: echo "check"
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - check
+      - asdf
+    steps:
+      - run: echo "build"

@@ -6,6 +6,7 @@ use std::fs::File;
 pub use crate::config::Config;
 use crate::schemas::{validate_as_action, validate_as_workflow};
 use glob::glob;
+use serde_json::{Map, Value};
 
 pub fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
     let fd = File::open(&config.src)?;
@@ -36,7 +37,7 @@ pub fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
                     .ok_or("Unable to convert PathBuf to string!")?
             );
         }
-        validate_as_workflow(&doc) && validate_paths(&doc)
+        validate_as_workflow(&doc) && validate_paths(&doc) && validate_job_needs(&doc)
     };
 
     if valid_doc {
@@ -88,4 +89,38 @@ fn validate_globs(globs: &serde_json::Value, path: &str) -> bool {
 
         success
     }
+}
+
+fn validate_job_needs(doc: &serde_json::Value) -> bool {
+    fn is_invalid_dependency(jobs: &Map<String, Value>, need_str: &str) -> bool {
+        !jobs.contains_key(need_str)
+    }
+
+    fn print_error(needs_str: &str) {
+        eprintln!("unresolved job {needs_str}");
+    }
+
+    let mut success = true;
+    if let Some(jobs) = doc["jobs"].as_object() {
+        for job_key in jobs.keys() {
+            let needs = &jobs.get(job_key).unwrap()["needs"];
+            if needs.is_string() {
+                let needs_str = needs.as_str().unwrap();
+                if is_invalid_dependency(jobs, needs_str) {
+                    success = false;
+                    print_error(needs_str);
+                }
+            } else if needs.is_array() {
+                for need in needs.as_array().unwrap() {
+                    let need_str = need.as_str().unwrap();
+                    if is_invalid_dependency(jobs, need_str) {
+                        success = false;
+                        print_error(need_str);
+                    }
+                }
+            }
+        }
+    }
+
+    success
 }
