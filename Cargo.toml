@@ -12,7 +12,9 @@ include = [
 ]
 version = "0.0.0-git"
 authors = ["Matt Palmer <matt@hezmatt.org>"]
-edition = "2018"
+edition = "2021"
+# If this is changed, .github/workflows/qa.yml build matrix needs updating as well
+rust-version = "1.60.0"
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }

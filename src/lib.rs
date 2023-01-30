@@ -75,12 +75,12 @@ fn validate_globs(globs: &serde_json::Value, path: &str) -> bool {
             match glob(g.as_str().unwrap()) {
                 Ok(res) => {
                     if res.count() == 0 {
-                        eprintln!("Glob {} in {} does not match any files", g, path);
+                        eprintln!("Glob {g} in {path} does not match any files");
                         success = false;
                     }
                 }
                 Err(e) => {
-                    eprintln!("Glob {} in {} is invalid: {}", g, path, e);
+                    eprintln!("Glob {g} in {path} is invalid: {e}");
                     success = false;
                 }
             };

@@ -25,7 +25,7 @@ fn validate_with_schema(doc: &Value, schema: &[u8]) -> bool {
     if state.is_valid() {
         true
     } else {
-        eprintln!("Validation failed: {:#?}", state);
+        eprintln!("Validation failed: {state:#?}");
         false
     }
 }
