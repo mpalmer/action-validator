@@ -97,7 +97,7 @@ fn validate_job_needs(doc: &serde_json::Value) -> bool {
     }
 
     fn print_error(needs_str: &str) {
-        eprintln!("unresolved job {}", needs_str);
+        eprintln!("unresolved job {needs_str}");
     }
 
     let mut success = true;
