@@ -9,7 +9,12 @@ fn main() {
     let n_errors = config
         .src
         .iter()
-        .map(|src| (src, action_validator::run_on_file(src, config.verbose)))
+        .map(|src| {
+            (
+                src,
+                action_validator::run_on_file(src.clone(), config.verbose),
+            )
+        })
         .filter_map(|(src, result)| match result {
             Ok(_) => None,
             Err(error) => Some((src, error)),

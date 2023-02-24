@@ -9,7 +9,7 @@ use glob::glob;
 use serde_json::{Map, Value};
 use std::path::PathBuf;
 
-pub fn run_on_file(src: &PathBuf, verbose: bool) -> Result<(), Box<dyn std::error::Error>> {
+pub fn run_on_file(src: PathBuf, verbose: bool) -> Result<(), Box<dyn std::error::Error>> {
     let fd = File::open(&src)?;
     let doc = parse_src(fd)?;
 
