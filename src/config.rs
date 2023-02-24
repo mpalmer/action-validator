@@ -14,5 +14,5 @@ pub struct Config {
 
     /// Input file
     #[arg(name = "path_to_action_yaml")]
-    pub src: PathBuf,
+    pub src: Vec<PathBuf>,
 }

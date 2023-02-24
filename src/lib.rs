@@ -7,34 +7,28 @@ pub use crate::config::Config;
 use crate::schemas::{validate_as_action, validate_as_workflow};
 use glob::glob;
 use serde_json::{Map, Value};
+use std::path::PathBuf;
 
-pub fn run(config: &Config) -> Result<(), Box<dyn std::error::Error>> {
-    let fd = File::open(&config.src)?;
+pub fn run_on_file(src: PathBuf, verbose: bool) -> Result<(), Box<dyn std::error::Error>> {
+    let fd = File::open(&src)?;
     let doc = parse_src(fd)?;
 
-    let file_name = config
-        .src
+    let file_name = src
         .file_name()
         .ok_or("Unable to derive file name from src!")?;
     let valid_doc = if file_name == "action.yml" || file_name == "action.yaml" {
-        if config.verbose {
+        if verbose {
             eprintln!(
                 "Treating {} as an Action definition",
-                config
-                    .src
-                    .to_str()
-                    .ok_or("Unable to convert PathBuf to string!")?
+                src.to_str().ok_or("Unable to convert PathBuf to string!")?
             );
         }
         validate_as_action(&doc)
     } else {
-        if config.verbose {
+        if verbose {
             eprintln!(
                 "Treating {} as a Workflow definition",
-                config
-                    .src
-                    .to_str()
-                    .ok_or("Unable to convert PathBuf to string!")?
+                src.to_str().ok_or("Unable to convert PathBuf to string!")?
             );
         }
         validate_as_workflow(&doc) && validate_paths(&doc) && validate_job_needs(&doc)
