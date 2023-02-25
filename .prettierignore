@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# But not .mjs files
+!*.mjs
+!*.js
+
+# In all subdirectories
+!*/

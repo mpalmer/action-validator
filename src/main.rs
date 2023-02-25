@@ -1,34 +1,18 @@
-use action_validator::Config;
-use clap::Parser;
-use std::process;
+#[cfg(feature = "js")]
+fn main() {}
 
+#[cfg(not(feature = "js"))]
 fn main() {
-    let config = Config::parse();
+    use action_validator::CliConfig;
+    use clap::Parser;
+    use std::process;
 
-    // Run the validator on each file and collect any errors
-    let n_errors = config
-        .src
-        .iter()
-        .map(|src| {
-            (
-                src,
-                action_validator::run_on_file(src.clone(), config.verbose),
-            )
-        })
-        .filter_map(|(src, result)| match result {
-            Ok(_) => None,
-            Err(error) => Some((src, error)),
-        })
-        .map(|(src, error)| {
-            println!(
-                "Fatal error validating {}: {}",
-                src.to_str().unwrap(),
-                error
-            );
-        })
-        .count();
+    let config = CliConfig::parse();
 
-    if n_errors > 0 {
+    if matches!(
+        action_validator::cli::run(&config),
+        action_validator::cli::RunResult::Failure
+    ) {
         process::exit(1);
     }
 }
