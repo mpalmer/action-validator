@@ -1,0 +1,6 @@
+-   id: action-validator
+    name: 'action validator'
+    entry: bin/run-action-validator
+    files: '.github/workflows/.*\.ya?ml'
+    language: 'script'
+    description: "Validate GitHub Actions workflows"
