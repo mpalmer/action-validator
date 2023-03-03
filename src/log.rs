@@ -26,7 +26,7 @@ pub fn log(s: &str) {
 
 #[cfg(not(feature = "js"))]
 pub fn log(s: &str) {
-    println!("{}", s);
+    println!("{s}");
 }
 
 #[cfg(feature = "js")]
@@ -36,7 +36,7 @@ pub fn error(s: &str) {
 
 #[cfg(not(feature = "js"))]
 pub fn error(s: &str) {
-    eprintln!("{}", s);
+    eprintln!("{s}");
 }
 
 #[cfg(feature = "js")]
@@ -46,5 +46,5 @@ pub fn warn(s: &str) {
 
 #[cfg(not(feature = "js"))]
 pub fn warn(s: &str) {
-    eprintln!("{}", s);
+    eprintln!("{s}");
 }

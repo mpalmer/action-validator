@@ -92,7 +92,7 @@ pub mod cli {
             let src = &match fs::read_to_string(path) {
                 Ok(src) => src,
                 Err(err) => {
-                    eprintln!("Unable to read file: {}", err);
+                    eprintln!("Unable to read file: {err}");
                     success = false;
                     continue;
                 }
@@ -141,13 +141,13 @@ fn run(config: &RunConfig) -> ValidationState {
         Ok(doc) => match config.action_type {
             ActionType::Action => {
                 if config.verbose {
-                    log::log(&format!("Treating {} as an Action definition", file_name));
+                    log::log(&format!("Treating {file_name} as an Action definition"));
                 }
                 validate_as_action(&doc)
             }
             ActionType::Workflow => {
                 if config.verbose {
-                    log::log(&format!("Treating {} as a Workflow definition", file_name));
+                    log::log(&format!("Treating {file_name} as a Workflow definition"));
                 }
                 // TODO: Re-enable path and job validation
                 let mut state = validate_as_workflow(&doc);
