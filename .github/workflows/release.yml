@@ -93,3 +93,68 @@ jobs:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
         run: |
           cargo publish --allow-dirty
+
+  npm:
+    strategy:
+      matrix:
+        package-dir:
+          - packages/core
+          - packages/cli
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup Rust
+        if: matrix.package-dir == 'packages/core'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          default: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install root dependencies
+        if: matrix.package-dir == 'packages/core'
+        run: npm ci
+
+      - name: Build
+        if: matrix.package-dir == 'packages/core'
+        run: npm run build
+
+      - name: Install package dependencies
+        working-directory: ${{ matrix.package-dir }}
+        run: npm ci
+
+      - name: Set package.json version
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref }}
+        working-directory: ${{ matrix.package-dir }}
+        run: |
+          mv package.json package.json.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" package.json.orig >package.json
+          mv package-lock.json package-lock.json.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" package-lock.json.orig >package-lock.json
+
+      - name: Copy README.md and LICENCE to package
+        env:
+          PACKAGE_DIR: ${{ matrix.package-dir }}
+        run: |
+          cp README.md $PACKAGE_DIR/README.md
+          cp LICENCE $PACKAGE_DIR/LICENCE
+
+      - name: Publish NPM
+        run: npm publish --access public
+        working-directory: ${{ matrix.package-dir }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

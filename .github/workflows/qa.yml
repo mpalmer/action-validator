@@ -2,6 +2,8 @@ name: Quality Control
 
 on:
   push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -47,6 +49,17 @@ jobs:
 
       - name: Run shfmt
         run: shfmt -d bin/* test/run
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint (Prettier)
+        run: npm run lint
 
   build:
     strategy:
@@ -111,8 +124,38 @@ jobs:
           command: build
 
       - name: Run Testsuite
-        working-directory: 'test'
+        working-directory: "test"
         run: ./run
+
+  build-test-node:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          default: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
 
   actions:
     runs-on: ubuntu-latest

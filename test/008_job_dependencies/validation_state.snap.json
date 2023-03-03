@@ -1,0 +1,11 @@
+{
+  "actionType": "workflow",
+  "errors": [
+    {
+      "code": "unresolved_job",
+      "detail": "unresolved job asdf",
+      "path": "/jobs/build/needs",
+      "title": "Unresolved job"
+    }
+  ]
+}

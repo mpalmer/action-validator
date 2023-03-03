@@ -1,0 +1,25 @@
+Validation failed: ValidationState {
+    action_type: Some(
+        Workflow,
+    ),
+    file_path: Some(
+        "009_multi_file/xinvalid.yml",
+    ),
+    errors: [
+        Parse {
+            code: "parse_error",
+            detail: Some(
+                "mapping values are not allowed in this context at line 36 column 15",
+            ),
+            path: "",
+            title: "Parse Error",
+            location: Some(
+                ParseErrorLocation {
+                    index: 872,
+                    line: 36,
+                    column: 15,
+                },
+            ),
+        },
+    ],
+}

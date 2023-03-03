@@ -1,5 +1,5 @@
 The `action-validator` is a standalone tool designed to "lint" the YAML files
-used to define GitHub Actions and Workflows.  It ensures that they are well-formed,
+used to define GitHub Actions and Workflows. It ensures that they are well-formed,
 by checking them against published JSON schemas, and it makes sure that any
 globs used in `paths` / `paths-ignore` match at least one file in the repo.
 
@@ -11,11 +11,10 @@ similar situations.
 
 We have many ways to install `action-validator`.
 
-
 ## Pre-built binaries
 
 The [GitHub releases](https://github.com/mpalmer/action-validator/releases)
-have some pre-built binaries -- just download and put them in your path.  If a
+have some pre-built binaries -- just download and put them in your path. If a
 binary for your platform isn't available, let me know and I'll see what I can
 figure out.
 
@@ -52,6 +51,16 @@ asdf global action-validator latest
 action-validator --help
 ```
 
+## Using NPM
+
+Node users can install the latest version using NPM:
+
+> ℹ️ The `@action-validator/core` package can be used directly within Node.js applications.
+
+```sh
+npm install -g @action-validator/core @action-validator/cli --save-dev
+```
+
 ## Building from the repo
 
 If you want to build locally, you'll need to:
@@ -78,7 +87,7 @@ Use `action-validator -h` to see additional options.
 > ### CAUTION
 >
 > As the intended use-case for `action-validator` is in pre-commit hooks,
-> it assumes that it is being run from the root of the repository.  Glob
+> it assumes that it is being run from the root of the repository. Glob
 > checking will explode horribly if you run it from a sub-directory of the
 > repo -- or, heaven forfend, outside the repository entirely.
 
@@ -154,8 +163,43 @@ Running pre-commit hook for GitHub Actions: https://github.com/mpalmer/action-va
 action-validator scanned 2 GitHub Actions found no errors!
 [main c34fda3] Update read-me
  1 file changed, 2 insertions(+)
- ```
+```
 
+## NPM
+
+Provided you have followed the [installation instructions for NPM](#npm-package), you can run the action
+validator CLI as follows
+
+```sh
+npx action-validator <path_to_action_yaml>
+```
+
+Or, if you've installed the package globally:
+
+```sh
+action-validator <path_to_action_yaml>
+```
+
+## Node API
+
+The Node API can be used to validate action and workflow files from Node.js as follows:
+
+> ⚠️ The Node API does not currently support glob validation.
+
+```ts
+import { readFileSync } from "fs";
+import { validateAction, validateWorkflow } from "@action-validator/core";
+
+// Validate Action
+const actionSource = readFileSync("action.yml", "utf8");
+const state = validator.validateAction(actionSource);
+const isValid = state.errors.length === 0;
+
+// Validate Workflow
+const workflowSource = readFileSync("workflow.yml", "utf8");
+const state = validator.validateWorkflow(workflowSource);
+const isValid = state.errors.length === 0;
+```
 
 # Contributing
 

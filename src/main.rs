@@ -1,16 +1,18 @@
-use action_validator::Config;
-use clap::Parser;
-use std::process;
+#[cfg(feature = "js")]
+fn main() {}
 
+#[cfg(not(feature = "js"))]
 fn main() {
-    let config = Config::parse();
+    use action_validator::CliConfig;
+    use clap::Parser;
+    use std::process;
 
-    if let Err(e) = action_validator::run(&config) {
-        println!(
-            "Fatal error validating {}: {}",
-            config.src.to_str().unwrap(),
-            e
-        );
+    let config = CliConfig::parse();
+
+    if matches!(
+        action_validator::cli::run(&config),
+        action_validator::cli::RunResult::Failure
+    ) {
         process::exit(1);
     }
 }

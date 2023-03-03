@@ -1,1 +1,1 @@
-Fatal error validating 007_funky_syntax/rust-check.yml: mapping values are not allowed in this context at line 38 column 15
+Fatal error validating 007_funky_syntax/rust-check.yml
