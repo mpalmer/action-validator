@@ -22,9 +22,9 @@ for t in [0-9]*; do
 	failed=n
 	rv=0
 
-	testfile="$(ls "$t"/*.yml)"
+	readarray -t -d '' testfiles < <(find "$t"/ -name '*.yml' -print0)
 
-	"$cmd" "$testfile" >"$dir/stdout" 2>"$dir/stderr" || rv="$?"
+	"$cmd" "${testfiles[@]}" >"$dir/stdout" 2>"$dir/stderr" || rv="$?"
 	stdout="$(cat "$dir"/stdout)"
 	stderr="$(cat "$dir"/stderr)"
 
