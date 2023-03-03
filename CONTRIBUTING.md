@@ -1,5 +1,5 @@
 * If you have found a discrepancy in documented and observed behaviour, that
-  is a bug.  Feel free to [report it as an
+  is a bug. Feel free to [report it as an
   issue](https://github.com/mpalmer/action-validator/issues), providing
   sufficient detail to reproduce the problem.
 

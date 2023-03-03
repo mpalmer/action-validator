@@ -1,0 +1,28 @@
+{
+  "name": "@action-validator/core",
+  "collaborators": [
+    "Matt Palmer <matt@hezmatt.org>",
+    "Ben Heidemann <ben@heidemann.co.uk>"
+  ],
+  "description": "Validator for GitHub action and workflow YAML files",
+  "version": "0.0.0-git",
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mpalmer/action-validator"
+  },
+  "files": [
+    "action_validator_bg.wasm",
+    "action_validator.js",
+    "action_validator.d.ts"
+  ],
+  "main": "action_validator.js",
+  "homepage": "https://github.com/mpalmer/action-validator",
+  "types": "action_validator.d.ts",
+  "scripts": {
+    "build": "npx wasm-pack build --out-dir target/wasm-pack/build --no-typescript --target nodejs --features js && cp target/wasm-pack/build/action_validator_bg.wasm dist/ && cp target/wasm-pack/build/action_validator.js dist/ && cp target/wasm-pack/build/action_validator.js dist/",
+    "test": "node test/run.mjs",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
+  }
+}
