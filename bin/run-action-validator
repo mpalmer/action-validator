@@ -7,8 +7,4 @@ if ! command -v action-validator &>/dev/null; then
 	exit 1
 fi
 
-for file in $@
-do
-   echo "File: ${file}"
-   action-validator $file
-done
+action-validator "$@"
