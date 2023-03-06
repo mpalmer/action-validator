@@ -10,9 +10,5 @@ fi
 for file in $@
 do
    echo "File: ${file}"
-   errors=$(action-validator $file 2>&1)
-   if [ ! -z "$errors" ]; then
-      echo "${errors}"
-      exit 1
-   fi
+   action-validator $file
 done
