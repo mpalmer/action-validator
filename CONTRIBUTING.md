@@ -11,6 +11,11 @@
 
 # Environment Setup
 
+## Install Rust
+Firstly, you'll need make any changes to the core functionality of this project. We recommend use `rustup`, on the recommendation of the rust team. You can find the installation instructions [here](https://www.rust-lang.org/tools/install).
+
+To confirm that rust is installed, run the `cargo` command. If you don't receive the help docs output, you may need to add rust to your shell rc file.
+
 # Running the Validator Locally
 
 # Writing Tests
