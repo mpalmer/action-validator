@@ -8,3 +8,9 @@
   request](https://github.com/mpalmer/action-validator/pulls).
 
 * At all times, abide by the Code of Conduct (CODE_OF_CONDUCT.md).
+
+# Environment Setup
+
+# Running the Validator Locally
+
+# Writing Tests
