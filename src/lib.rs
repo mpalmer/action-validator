@@ -155,6 +155,9 @@ fn run(config: &RunConfig) -> ValidationState {
 
                 validate_paths(&doc, &mut state);
                 validate_job_needs(&doc, &mut state);
+                if config.remote_checks {
+                    validate_remote_checks(&doc, &mut state);
+                }
 
                 state
             }
@@ -263,4 +266,8 @@ fn validate_job_needs(doc: &serde_json::Value, state: &mut ValidationState) {
             }
         }
     }
+}
+
+fn validate_remote_checks(doc: &serde_json::Value, state: &mut ValidationState) {
+    println!("{}, {:#?}", doc.to_string(), state);
 }
