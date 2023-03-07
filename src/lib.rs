@@ -107,6 +107,7 @@ pub mod cli {
                 },
                 src,
                 verbose: config.verbose,
+                remote_checks: config.remote_checks,
             };
 
             let state = crate::run(&config);
