@@ -2,18 +2,16 @@ mod config;
 mod log;
 mod schemas;
 mod utils;
+mod validators;
 mod validation_error;
 mod validation_state;
 
 
-use config::{ActionType, RunConfig};
-use regex::{Regex};
-#[cfg(feature="remote-checks")]
-use reqwest::blocking::Client;
 use validation_error::ValidationError;
 use validation_state::ValidationState;
 
 pub use crate::config::CliConfig;
+use config::{ActionType, RunConfig};
 use crate::schemas::{validate_as_action, validate_as_workflow};
 #[cfg(not(feature = "js"))]
 use glob::glob;
@@ -158,8 +156,7 @@ fn run(config: &RunConfig) -> ValidationState {
 
                 validate_paths(&doc, &mut state);
                 validate_job_needs(&doc, &mut state);
-                validate_job_uses(&doc, &mut state);
-
+                validators::job_uses::validate(&doc, &mut state);
                 state
             }
         },
@@ -267,149 +264,4 @@ fn validate_job_needs(doc: &serde_json::Value, state: &mut ValidationState) {
             }
         }
     }
-}
-
-// #[derive(Debug)]
-// enum Uses<'a> {
-//     Action(&'a str),
-//     Path(&'a str),
-//     Docker(&'a str),
-//     Invalid(&'a str),
-// }
-
-trait Uses<'a>: std::fmt::Debug {
-    fn validate(&self) -> Option<()>;
-}
-
-#[derive(Debug)]
-struct Invalid;
-
-impl Uses<'_> for Invalid {
-    fn validate(&self) -> Option<()> { println!("Invalid"); Some(()) }
-}
-
-#[derive(Debug)]
-struct Action<'a> {
-    owner: &'a str,
-    repo: &'a str,
-    path: Option<&'a str>,
-    reference: &'a str,
-}
-
-
-impl Uses<'_> for Action<'_> {
-    #[cfg(not(feature="remote-checks"))]
-    fn validate(&self) -> Option<()> {
-        println!(
-            "{}, {}, {}, {}", 
-            self.owner,
-            self.repo,
-            self.path.unwrap_or("..."),
-            self.reference,
-        );
-        Some(())
-    }
-
-    #[cfg(feature="remote-checks")]
-    fn validate(&self) -> Option<()> {
-        println!("{}", self.path.unwrap_or("..."));
-        let request = Client::new()
-            .get(format!(
-                "https://github.com/{0}/{1}/tree/{2}",
-                self.owner,
-                self.repo,
-                self.reference,
-            ));
-        let response = request.send();
-        if response.ok()?.status() == 200 {
-            return Some(());
-        }
-        None
-    }
-}
-
-fn validate_job_uses(doc: &serde_json::Value, state: &mut ValidationState) -> Option<()> {
-    // If this regex doesn't compile, that should be considered a compile-time
-    // error. As such, we should unwrap to purposefully panic in the event of
-    // a malformed regex.
-    let r = Regex::new(r"(?x)^
-    (?P<Action>.{0}(?P<owner>[^/]*)/(?P<repo>[^/]*)(/(?P<path>.*))?@(?P<ref>.*))|
-    (?P<Path>.{0}\./([^/]+))|
-    (?P<Docker>.{0}docker://(?P<image>.*)(:(?P<tag>.*))?)|
-    $").unwrap();
-
-    for (job_name, job) in doc["jobs"].as_object()?.iter() {
-        let  _ = job_name;
-        for step in job["steps"].as_array()?.iter() {
-            let uses_step = step["uses"].as_str()?;
-            let matched = r.captures(uses_step)?;
-            let uses_op: Option<Box<dyn Uses>> = vec![
-                "Action", "Path", "Docker",
-            ]
-            .into_iter()
-            .find_map::<Box<dyn Uses>, _>(|name| {
-                matched.name(name)?;
-                match name {
-                    // "Path" => Some(Uses::Path(value)),
-                    // "Docker" => Some(Uses::Docker(value)),
-                    "Action" => Some(Box::new(Action {
-                        owner: matched.name("owner")?.as_str(),
-                        repo: matched.name("repo")?.as_str(),
-                        path: matched.name("path").map(|m| m.as_str()),
-                        reference: matched.name("ref")?.as_str(),
-                    })),
-                    _ => Some(Box::new(Invalid{})),
-                }
-            });
-            println!("{:#?}", uses_op);
-            let uses: Box<dyn Uses> = Box::new(Action {
-                owner: "owner",
-                repo: "repo",
-                path: Some("path"),
-                reference: "ref",
-            });
-            if cfg!(feature="remote-checks") {
-                validate_remote_checks(uses, state);
-            }
-            // println!("{:#?}", uses_op);
-            // if let Some(uses) = uses_op {
-            //     if uses.validate().is_none() {
-            //         state.errors.push(ValidationError::UnresolvedJob {
-            //             code: "uses_not_found".into(),
-            //             path: format!("/jobs/{job_name}/steps"),
-            //             title: "Invalid uses".into(),
-            //             detail: Some(format!("Could not find the action `{uses_step}`.")),
-            //         });
-            //     }
-            // }
-            // if uses.is_none() {
-            //     println!("Error: {}", uses_step);
-            //     continue;
-            //     // TODO: Push error
-            // }
-            // if let Some(Uses::Invalid(value)) = uses {
-            //     println!("Error: {}", uses_step);
-            //     state.errors.push(ValidationError::UnresolvedJob {
-            //         code: "invalid_uses".into(),
-            //         path: format!("/jobs/{job_name}/uses/{uses_step}"),
-            //         title: "Invalid uses".into(),
-            //         detail: Some(format!("Invalid uses {value}")),
-            //     });
-            //     continue;
-            // }
-            // println!("Success: {:#?}", uses?);
-        }
-    }
-    Some(())
-}
-
-#[cfg(not(feature="remote-checks"))]
-fn validate_remote_checks(_: Box<dyn Uses>, _: &mut ValidationState) -> Option<()> {
-    Some(())
-}
-
-#[cfg(feature="remote-checks")]
-fn validate_remote_checks(uses: Box<dyn Uses>, _: &mut ValidationState) -> Option<()> {
-    uses.validate();
-    Some(())
 }

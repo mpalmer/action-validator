@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout
+        uses: actions/checkout@v1
         with:
           submodules: true
 
       - name: Audit
-        uses: actions-rs/audit-check/testing@v
+        uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
