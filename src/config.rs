@@ -43,7 +43,6 @@ pub struct RunConfig<'a> {
     pub action_type: ActionType,
     pub src: &'a str,
     pub verbose: bool,
-    pub remote_checks: bool,
 }
 
 impl<'a> From<&JsConfig<'a>> for RunConfig<'a> {
@@ -54,7 +53,6 @@ impl<'a> From<&JsConfig<'a>> for RunConfig<'a> {
             action_type: config.action_type,
             src: config.src,
             verbose: config.verbose,
-            remote_checks: config.remote_checks,
         }
     }
 }

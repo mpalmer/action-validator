@@ -21,6 +21,7 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 js = ["console_error_panic_hook", "wee_alloc", "valico/js"]
+remote-checks = ["reqwest"]
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
@@ -46,10 +47,7 @@ wee_alloc = { version = "0.4.5", optional = true }
 serde-wasm-bindgen = "0.4.5"
 regex = "1.7.1"
 futures = "0.3.26"
-
-[dependencies.reqwest]
-version = "0.11.14" # latest version at time of writing
-features = ["blocking"]
+reqwest = { version = "0.11.14", features = ["blocking"], optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
