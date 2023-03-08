@@ -14,11 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout
         with:
           submodules: true
 
       - name: Audit
-        uses: actions-rs/audit-check@v1
+        uses: actions-rs/audit-check/testing@v
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Path
+        uses: ./.github/actions/action1
+
+      - name: DockerHub
+        uses: docker://alpine:3.8
+
+      - name: DockerRegistry
+        uses: docker://gcr.io/cloud-builders/gradle

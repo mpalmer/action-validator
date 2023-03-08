@@ -5,7 +5,10 @@ mod utils;
 mod validation_error;
 mod validation_state;
 
+
 use config::{ActionType, RunConfig};
+use regex::{Regex};
+use reqwest::blocking::Client;
 use validation_error::ValidationError;
 use validation_state::ValidationState;
 
@@ -268,6 +271,107 @@ fn validate_job_needs(doc: &serde_json::Value, state: &mut ValidationState) {
     }
 }
 
-fn validate_remote_checks(doc: &serde_json::Value, state: &mut ValidationState) {
-    println!("{}, {:#?}", doc.to_string(), state);
+// #[derive(Debug)]
+// enum Uses<'a> {
+//     Action(&'a str),
+//     Path(&'a str),
+//     Docker(&'a str),
+//     Invalid(&'a str),
+// }
+
+trait Uses<'a>: std::fmt::Debug {
+    fn validate(&self) -> Option<()>;
+}
+
+#[derive(Debug)]
+struct Action<'a> {
+    owner: &'a str,
+    repo: &'a str,
+    _path: Option<&'a str>,
+    reference: &'a str,
+}
+
+
+impl Uses<'_> for Action<'_> {
+    fn validate(&self) -> Option<()> {
+        println!("{:#?}", self);
+        let request = Client::new()
+            .get(format!(
+                "https://github.com/{0}/{1}/tree/{2}",
+                self.owner,
+                self.repo,
+                self.reference,
+            ));
+        let response = request.send();
+        if response.ok()?.status() == 200 {
+            return Some(());
+        }
+        None
+    }
+}
+
+
+fn validate_remote_checks(doc: &serde_json::Value, state: &mut ValidationState) -> Option<()> {
+    // If this regex doesn't compile, that should be considered a compile-time
+    // error. As such, we should unwrap to purposefully panic in the event of
+    // a malformed regex.
+    let r = Regex::new(r"(?x)^
+    (?P<Action>.{0}(?P<owner>[^/]*)/(?P<repo>[^/]*)(/(?P<path>.*))?@(?P<ref>.*))|
+    (?P<Path>.{0}\./([^/]+))|
+    (?P<Docker>.{0}docker://(?P<image>.*)(:(?P<tag>.*))?)|
+    $").unwrap();
+
+    for (job_name, job) in doc["jobs"].as_object()?.iter() {
+        let  _ = job_name;
+        for step in job["steps"].as_array()?.iter() {
+            let uses_step = step["uses"].as_str()?;
+            let matched = r.captures(uses_step)?;
+            let uses_op = vec![
+                "Action", "Path", "Docker",
+            ]
+            .into_iter()
+            .find_map(|name| {
+                matched.name(name)?;
+                match name {
+                    "Action" => Some(Box::new(Action {
+                        owner: matched.name("owner")?.as_str(),
+                        repo: matched.name("repo")?.as_str(),
+                        _path: matched.name("path").map(|m| m.as_str()),
+                        reference: matched.name("ref")?.as_str(),
+                    })),
+                    // "Path" => Some(Uses::Path(value)),
+                    // "Docker" => Some(Uses::Docker(value)),
+                    _ => None,
+                }
+            });
+            println!("{:#?}", uses_op);
+            if let Some(uses) = uses_op {
+                if uses.validate().is_none() {
+                    state.errors.push(ValidationError::UnresolvedJob {
+                        code: "uses_not_found".into(),
+                        path: format!("/jobs/{job_name}/steps"),
+                        title: "Invalid uses".into(),
+                        detail: Some(format!("Could not find the action `{uses_step}`.")),
+                    });
+                }
+            }
+            // if uses.is_none() {
+            //     println!("Error: {}", uses_step);
+            //     continue;
+            //     // TODO: Push error
+            // }
+            // if let Some(Uses::Invalid(value)) = uses {
+            //     println!("Error: {}", uses_step);
+            //     state.errors.push(ValidationError::UnresolvedJob {
+            //         code: "invalid_uses".into(),
+            //         path: format!("/jobs/{job_name}/uses/{uses_step}"),
+            //         title: "Invalid uses".into(),
+            //         detail: Some(format!("Invalid uses {value}")),
+            //     });
+            //     continue;
+            // }
+            // println!("Success: {:#?}", uses?);
+        }
+    }
+    Some(())
 }
