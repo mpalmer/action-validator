@@ -22,15 +22,3 @@ jobs:
         uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Path
-        uses: ./.github
-
-      - name: DockerHub
-        uses: docker://alpine:3.8
-
-      - name: DockerRegistry
-        uses: docker://gcr.io/cloud-builders/gradle
-
-      - name: GHCR
-        uses: docker://ghcr.io/aquasecurity/trivy:latest
