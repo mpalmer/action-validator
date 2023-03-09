@@ -24,7 +24,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Path
-        uses: ./.github/actions/action1
+        uses: ./.github
 
       - name: DockerHub
         uses: docker://alpine:3.8

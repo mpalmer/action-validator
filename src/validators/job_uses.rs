@@ -3,7 +3,7 @@ use regex::Regex;
 use crate::validation_error::ValidationError;
 use crate::validation_state::ValidationState;
 
-use crate::validators::models::{Action, Uses, Invalid};
+use crate::validators::models;
 
 
 pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<()> {
@@ -12,8 +12,8 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
     // a malformed regex.
     let r = Regex::new(r"(?x)^
     (?P<Action>.{0}(?P<owner>[^/]*)/(?P<repo>[^/]*)(/(?P<path>.*))?@(?P<ref>.*))|
-    (?P<Path>.{0}\./([^/]+))|
-    (?P<Docker>.{0}docker://(?P<image>.*)(:(?P<tag>.*))?)|
+    (?P<Path>.{0}\./([^/]+/?)+)|
+    (?P<Docker>.{0}(?:docker://)(?P<url>([^:]+)/)?(?P<image>[^/:]+)(?::(?P<tag>.+))?)|
     $").unwrap();
 
     let all_uses = doc["jobs"]
@@ -35,11 +35,11 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
     .collect::<Vec<_>>();
     for (job_name, uses) in all_uses {
         let matched = r.captures(uses)?;
-        let uses_op: Option<Box<dyn Uses>> = vec![
+        let uses_op: Option<Box<dyn models::Uses>> = vec![
             "Action", "Path", "Docker",
         ]
         .into_iter()
-        .find_map::<Box<dyn Uses>, _>(|name| {
+        .find_map::<Box<dyn models::Uses>, _>(|name| {
             // If the regex didn't match any of them,
             // then it's an error.
             matched.name(name)?;
@@ -48,20 +48,36 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
             let uses = String::from(&matched[0]);
             match name {
                 "Path" => {
-                    Some(Box::new(Invalid{uses, origin}))
+                    Some(Box::new(models::Path{uses, origin}))
                 },
                 "Docker" => {
-                    Some(Box::new(Invalid{uses, origin}))
+                    let image = String::from(matched.name("image").unwrap().as_str());
+                    let url = matched.name("url").map(|v| String::from(v.as_str()));
+                    let tag = matched.name("tag").map(|v| String::from(v.as_str()));
+                    Some(Box::new(models::Docker {
+                        uses,
+                        origin,
+                        image,
+                        url,
+                        tag,
+                    }))
                 },
-                "Action" => Some(Box::new(Action {
-                    owner: String::from(matched.name("owner")?.as_str()),
-                    repo: String::from(matched.name("repo")?.as_str()),
-                    path: matched.name("path").map(|m| String::from(m.as_str())),
-                    reference: String::from(matched.name("ref")?.as_str()),
-                    origin,
-                })),
+                "Action" => {
+                    let owner = String::from(matched.name("owner").unwrap().as_str());
+                    let repo = String::from(matched.name("repo").unwrap().as_str());
+                    let path = matched.name("path").map(|v| String::from(v.as_str()));
+                    let reference = String::from(matched.name("ref").unwrap().as_str());
+                    Some(Box::new(models::Action {
+                        uses,
+                        origin,
+                        owner,
+                        repo,
+                        path,
+                        reference,
+                    }))
+                },
                 _ => {
-                    Some(Box::new(Invalid{uses, origin}))
+                    Some(Box::new(models::Invalid{uses, origin}))
                  },
             }
         });
@@ -86,7 +102,7 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
     Some(())
 }
 
-fn validate_remote_checks(uses: Box<dyn Uses>, state: &mut ValidationState) -> () {
+fn validate_remote_checks(uses: Box<dyn models::Uses>, state: &mut ValidationState) -> () {
     if !cfg!(feature="remote-checks") {
         return ();
     }
