@@ -31,3 +31,6 @@ jobs:
 
       - name: DockerRegistry
         uses: docker://gcr.io/cloud-builders/gradle
+
+      - name: GHCR
+        uses: docker://ghcr.io/aquasecurity/trivy:latest

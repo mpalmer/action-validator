@@ -18,7 +18,6 @@ pub struct Invalid {
 
 impl Uses<'_> for Invalid {
     fn validate(&self) -> Result<(), ValidationError> { 
-        println!("{:#?}", self);
         Ok(())
     }
 }
@@ -97,7 +96,7 @@ impl Uses<'_> for Docker {
 
         let url = match (self.url.as_ref(), self.tag.as_ref()) {
             // Lookup V2 protocol tag
-            (Some(url), Some(tag)) => format!("https://{url}/v2/{image}/manifest/{tag}"),
+            (Some(url), Some(tag)) => format!("https://{url}/v2/{image}/manifests/{tag}"),
             // Lookup V2 protocol image
             (Some(url), None) => format!("https://{url}/v2/{image}/tags/list"),
             // Lookup docker hub tag
@@ -110,12 +109,7 @@ impl Uses<'_> for Docker {
             },
         };
 
-        println!("{}", url);
-        let response = _get_request(url);
-
-        // How do we handle failed requests? If the user has the `remote-checks` feature enable,
-        // they likely want to know about these failures. We can mark this as a validation error.
-        if let Some(r) = response.ok() {
+        if let Some(r) = _get_request(url).ok() {
             let status = r.status();
             if status == StatusCode::OK {
                 return Ok(());
@@ -135,12 +129,15 @@ impl Uses<'_> for Docker {
             } else {
                 return Err(ValidationError::Unknown { 
                     code: "unexpected_server_response".into(),
-                    detail: Some(format!("Unexpected status code: {}", status)),
+                    detail: Some(format!("Unexpected server response: {}", status)),
                     path: self.origin.to_owned(),
                     title: "Docker Action Not Found".into(),
                 });
             }
         }
+
+        // How do we handle failed requests? If the user has the `remote-checks` feature enable,
+        // they likely want to know about these failures. We can mark this as a validation error.
         Err(ValidationError::Unknown { 
             code: "unexpected_server_response".into(),
             detail: Some(format!("Could not find docker action: {}", self.uses)),

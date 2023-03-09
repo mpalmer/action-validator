@@ -13,7 +13,7 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
     let r = Regex::new(r"(?x)^
     (?P<Action>.{0}(?P<owner>[^/]*)/(?P<repo>[^/]*)(/(?P<path>.*))?@(?P<ref>.*))|
     (?P<Path>.{0}\./([^/]+/?)+)|
-    (?P<Docker>.{0}(?:docker://)((?P<url>([^/:]+))/)?(?P<image>[^:]+)(?::(?P<tag>.+))?)|
+    (?P<Docker>.{0}(?:docker://)(?P<url>([^/:]+)\.([^/:]+)/)?(?P<image>[^:]+)(?::(?P<tag>.+))?)|
     $").unwrap();
 
     let all_uses = doc["jobs"]
@@ -44,8 +44,8 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
             // then it's an error.
             matched.name(name)?;
 
-            let origin = format!("jobs/{job_name}/steps/uses");
             let uses = String::from(&matched[0]);
+            let origin = format!("jobs/{job_name}/steps/uses/{uses}");
             match name {
                 "Path" => {
                     Some(Box::new(models::Path{uses, origin}))
