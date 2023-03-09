@@ -13,7 +13,7 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
     let r = Regex::new(r"(?x)^
     (?P<Action>.{0}(?P<owner>[^/]*)/(?P<repo>[^/]*)(/(?P<path>.*))?@(?P<ref>.*))|
     (?P<Path>.{0}\./([^/]+/?)+)|
-    (?P<Docker>.{0}(?:docker://)(?P<url>([^:]+)/)?(?P<image>[^/:]+)(?::(?P<tag>.+))?)|
+    (?P<Docker>.{0}(?:docker://)((?P<url>([^/:]+))/)?(?P<image>[^:]+)(?::(?P<tag>.+))?)|
     $").unwrap();
 
     let all_uses = doc["jobs"]
