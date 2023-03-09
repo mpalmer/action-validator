@@ -15,12 +15,6 @@ use crate::schemas::{validate_as_action, validate_as_workflow};
 use glob::glob;
 use serde_json::{Map, Value};
 
-// When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
-// allocator.
-#[cfg(feature = "wee_alloc")]
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-
 #[cfg(feature = "js")]
 mod js {
     use crate::{
