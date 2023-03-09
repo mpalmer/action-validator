@@ -13,10 +13,6 @@ pub struct CliConfig {
     #[arg(short, long)]
     pub verbose: bool,
 
-    /// Perform remote calls to validate actions exist
-    #[arg(short, long)]
-    pub remote_checks: bool,
-
     /// Input file
     #[arg(name = "path_to_action_yaml")]
     pub src: Vec<PathBuf>,
@@ -34,7 +30,6 @@ pub struct JsConfig<'a> {
     pub action_type: ActionType,
     pub src: &'a str,
     pub verbose: bool,
-    pub remote_checks: bool,
 }
 
 pub struct RunConfig<'a> {
