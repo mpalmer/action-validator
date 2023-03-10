@@ -12,7 +12,7 @@ enum ActionType {
 
 /// Validates all `jobs.<job_id>.steps[*].uses` values in the provided workflow file(s). This
 /// validator has remote checks which will only run if the `remote-checks` feature flag is enabled.
-/// If the feature flag is disabled, then this validate confirms the shape of the uses statement
+/// If the feature flag is disabled, then this validation confirms the shape of the uses statement
 /// matches GitHub's expected format
 /// ([more here](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsuses)).
 ///
