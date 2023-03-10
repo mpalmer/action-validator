@@ -3,12 +3,25 @@ use regex::{Regex, Captures};
 use crate::validation_state::ValidationState;
 use crate::validators::models;
 
+/// A simple enum providing exhaustive matching to [`_match_action`].
 enum ActionType {
     Action,
     Docker,
     Path,
 }
 
+/// Validates all `jobs.<job_id>.steps[*].uses` values in the provided workflow file(s). This
+/// validator has remote checks which will only run if the `remote-checks` feature flag is enabled.
+/// If the feature flag is disabled, then this validate confirms the shape of the uses statement
+/// matches GitHub's expected format
+/// ([more here](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsuses)).
+///
+/// If the feature flag is enabled, the above checks will be validated in addition to the remote
+/// checks. The [`models::Action`] and [`models::Docker`] structs both implement remote checks.
+///
+/// # Arguments
+/// * doc - The parsed workflow document, to be validated.
+/// * state - The [`ValidationState`] to which will be used to provide validation errors.
 pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) {
     // If this regex doesn't compile, that should be considered a compile-time
     // error. As such, we should unwrap to purposefully panic in the event of
@@ -58,6 +71,13 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) {
     }
 }
 
+/// Matches on the provided `action_type` and extracts the `captures` named capture groups for that
+/// implementation of the `Uses` trait.
+///
+/// # Arguments
+/// * `action_type` - An enum indicating if the action type is `Action`, `Docker`, or `Path`.
+/// * `origin` - The origin path of the `uses` string being validated from the workflow.
+/// * `captures` - The capture group which matched the validation regex.
 fn _action_type<'a>(
     action_type: ActionType,
     origin: &String,
