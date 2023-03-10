@@ -3,7 +3,7 @@ use regex::{Regex, Captures};
 use crate::validation_state::ValidationState;
 use crate::validators::models;
 
-/// A simple enum providing exhaustive matching to [`_match_action`].
+/// A simple enum providing exhaustive matching to [`_action_type`].
 enum ActionType {
     Action,
     Docker,
