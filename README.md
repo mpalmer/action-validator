@@ -104,7 +104,7 @@ Update your .pre-commit-config.yaml:
 ```
 repos:
 - repo: https://github.com/mpalmer/action-validator
-  rev: v0.4.0
+  rev: v0.5.1
   hooks:
     - id: action-validator
 ```
