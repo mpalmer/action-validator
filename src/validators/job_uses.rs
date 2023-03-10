@@ -1,11 +1,13 @@
 use regex::{Regex, Captures};
 
 use crate::validation_state::ValidationState;
-
 use crate::validators::models;
 
-use super::models::Invalid;
-
+enum ActionType {
+    Action,
+    Docker,
+    Path,
+}
 
 pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) {
     // If this regex doesn't compile, that should be considered a compile-time
@@ -45,7 +47,7 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) {
             .find_map(|action_type| {
                 Some(_action_type(action_type, &origin, captures_op.as_ref()?))
             })
-            .unwrap_or(Box::new(Invalid{
+            .unwrap_or(Box::new(models::Invalid{
                 uses: String::from(uses),
                 origin: origin.to_owned(),
             }));
@@ -54,12 +56,6 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) {
             state.errors.push(v);
         }
     }
-}
-
-enum ActionType {
-    Action,
-    Docker,
-    Path,
 }
 
 fn _action_type<'a>(
