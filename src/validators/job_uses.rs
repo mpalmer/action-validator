@@ -21,17 +21,15 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
     let jobs_step_uses = doc["jobs"]
         .as_object()?
         .iter()
-        .map(|(job_name, job)| {
-            job["steps"].as_array().map(|steps| {
-                steps
-                .iter()
-                .map(|step| Some((job_name, step["uses"].as_str()?)))
-                .flatten()
-                .collect::<Vec<_>>()
-            })
-            .unwrap_or(vec![])
+        .flat_map(|(job_name, job)| {
+            Some((job_name, job["steps"].as_array()?.iter()))
         })
-        .flatten()
+        .flat_map(|(job_name, steps)| {
+            steps.map(|step| {
+                    Some((job_name.to_owned(), step["uses"].as_str()?))
+            })
+        })
+        .filter_map(|o| o)
         .collect::<Vec<_>>();
 
     for (job_name, uses) in jobs_step_uses {
