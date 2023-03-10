@@ -1,25 +1,15 @@
 use crate::validation_error::ValidationError;
 
 #[cfg(feature="remote-checks")]
-use reqwest::{StatusCode, blocking::Client};
+use reqwest::{blocking::Response, StatusCode, blocking::Client};
+
+#[cfg(feature="remote-checks")]
+fn _get_request(url: String) -> Result<Response, reqwest::Error> {
+    Client::new().get(url).send()
+}
 
 pub trait Uses<'a>: std::fmt::Debug {
     fn validate(&self) -> Result<(), ValidationError>;
-}
-
-pub trait Other {
-}
-
-#[derive(Debug)]
-pub struct Invalid {
-    pub uses: String,
-    pub origin: String,
-}
-
-impl Uses<'_> for Invalid {
-    fn validate(&self) -> Result<(), ValidationError> { 
-        Ok(())
-    }
 }
 
 #[derive(Debug)]
@@ -32,9 +22,8 @@ pub struct Action {
     pub reference: String,
 }
 
-#[cfg(feature="remote-checks")]
-fn _get_request(url: String) -> Result<reqwest::blocking::Response, reqwest::Error> {
-    Client::new().get(url).send()
+impl Action {
+    pub const PATTERN: &str = r"(?P<Action>.{0}(?P<owner>[^/]*)/(?P<repo>[^/]*)(/(?P<path>.*))?@(?P<ref>.*))";
 }
 
 impl Uses<'_> for Action {
@@ -68,7 +57,6 @@ impl Uses<'_> for Action {
     }
 }
 
-
 #[derive(Debug)]
 pub struct Docker {
     pub uses: String,
@@ -76,6 +64,10 @@ pub struct Docker {
     pub image: String,
     pub url: Option<String>,
     pub tag: Option<String>,
+}
+
+impl Docker {
+    pub const PATTERN: &str = r"(?P<Docker>.{0}(?:docker://)(?P<url>([^/:]+)\.([^/:]+)/)?(?P<image>[^:]+)(?::(?P<tag>.+))?)";
 }
 
 impl Uses<'_> for Docker {
@@ -153,6 +145,10 @@ pub struct Path {
     pub origin: String,
 }
 
+impl Path {
+    pub const PATTERN: &str = r"(?P<Path>.{0}\./([^/]+/?)+)";
+}
+
 impl Uses<'_> for Path {
     fn validate(&self) -> Result<(), ValidationError> {
         if std::path::Path::new(self.uses.as_str()).exists() {
@@ -167,3 +163,20 @@ impl Uses<'_> for Path {
     }
 }
 
+#[derive(Debug)]
+pub struct Invalid {
+    pub uses: String,
+    pub origin: String,
+}
+
+impl Uses<'_> for Invalid {
+    fn validate(&self) -> Result<(), ValidationError> { 
+        let uses = self.uses.to_owned();
+        Err(ValidationError::InvalidGlob {
+            code: "invalid_uses".into(),
+            detail: Some(format!("The `uses` {uses} is invalid.")),
+            path:  self.origin.to_owned(),
+            title: "Invalid Uses".into(),
+        })
+    }
+}

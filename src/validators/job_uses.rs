@@ -1,112 +1,100 @@
-use regex::Regex;
+use regex::{Regex, Captures};
 
-use crate::validation_error::ValidationError;
 use crate::validation_state::ValidationState;
 
 use crate::validators::models;
+
+use super::models::Invalid;
 
 
 pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<()> {
     // If this regex doesn't compile, that should be considered a compile-time
     // error. As such, we should unwrap to purposefully panic in the event of
     // a malformed regex.
-    let r = Regex::new(r"(?x)^
-    (?P<Action>.{0}(?P<owner>[^/]*)/(?P<repo>[^/]*)(/(?P<path>.*))?@(?P<ref>.*))|
-    (?P<Path>.{0}\./([^/]+/?)+)|
-    (?P<Docker>.{0}(?:docker://)(?P<url>([^/:]+)\.([^/:]+)/)?(?P<image>[^:]+)(?::(?P<tag>.+))?)|
-    $").unwrap();
+    let pattern = vec![
+        models::Action::PATTERN,
+        models::Docker::PATTERN,
+        models::Path::PATTERN,
+    ].join("|");
+    let r = Regex::new(format!(r"(?x)^{pattern}$").as_str()).unwrap();
 
-    let all_uses = doc["jobs"]
+    let jobs_step_uses = doc["jobs"]
         .as_object()?
         .iter()
         .map(|(job_name, job)| {
             job["steps"].as_array().map(|steps| {
                 steps
                 .iter()
-                .map(|step| {
-                    Some((job_name, step["uses"].as_str()?))
-                })
+                .map(|step| Some((job_name, step["uses"].as_str()?)))
                 .flatten()
                 .collect::<Vec<_>>()
             })
             .unwrap_or(vec![])
-    })
-    .flatten()
-    .collect::<Vec<_>>();
-    for (job_name, uses) in all_uses {
-        let matched = r.captures(uses)?;
-        let uses_op: Option<Box<dyn models::Uses>> = vec![
-            "Action", "Path", "Docker",
-        ]
-        .into_iter()
-        .find_map::<Box<dyn models::Uses>, _>(|name| {
-            // If the regex didn't match any of them,
-            // then it's an error.
-            matched.name(name)?;
+        })
+        .flatten()
+        .collect::<Vec<_>>();
 
-            let uses = String::from(&matched[0]);
-            let origin = format!("jobs/{job_name}/steps/uses/{uses}");
-            match name {
-                "Path" => {
-                    Some(Box::new(models::Path{uses, origin}))
-                },
-                "Docker" => {
-                    let image = String::from(matched.name("image").unwrap().as_str());
-                    let url = matched.name("url").map(|v| String::from(v.as_str()));
-                    let tag = matched.name("tag").map(|v| String::from(v.as_str()));
-                    Some(Box::new(models::Docker {
-                        uses,
-                        origin,
-                        image,
-                        url,
-                        tag,
-                    }))
-                },
-                "Action" => {
-                    let owner = String::from(matched.name("owner").unwrap().as_str());
-                    let repo = String::from(matched.name("repo").unwrap().as_str());
-                    let path = matched.name("path").map(|v| String::from(v.as_str()));
-                    let reference = String::from(matched.name("ref").unwrap().as_str());
-                    Some(Box::new(models::Action {
-                        uses,
-                        origin,
-                        owner,
-                        repo,
-                        path,
-                        reference,
-                    }))
-                },
-                _ => {
-                    Some(Box::new(models::Invalid{uses, origin}))
-                 },
-            }
-        });
+    for (job_name, uses) in jobs_step_uses {
+        let origin = format!("jobs/{job_name}/steps/uses/{uses}");
+        let captures_op = &r.captures(uses);
 
-        if let Some(uses) = uses_op {
-            if cfg!(feature="remote-checks") {
-                validate_remote_checks(uses, state);
-            }
-        } else {
-            state.errors.push(ValidationError::InvalidGlob {
-                code: "invalid_uses".into(),
-                detail: Some(format!("The `uses` {uses} is invalid.")),
-                path:  "".into(),
-                title: "".into(),
-            });
+        let uses_type = vec![ActionType::Action, ActionType::Docker, ActionType::Path]
+            .into_iter()
+            .find_map(|action_type| {
+                if let Some(captures) = captures_op {
+                    Some(_action_type(action_type, &origin, &captures))
+                } else {
+                    Some(Box::new(Invalid{
+                        uses: String::from(uses),
+                        origin: origin.to_owned(),
+                    }))
+                }
+            })
+            .unwrap_or(Box::new(Invalid{
+                uses: String::from(uses),
+                origin: origin.to_owned(),
+            }));
+
+        if let Err(v) = uses_type.validate() {
+            state.errors.push(v);
         }
     }
-    let _ = state;
-    let _ = validate_remote_checks;
-
 
     Some(())
 }
 
-fn validate_remote_checks(uses: Box<dyn models::Uses>, state: &mut ValidationState) -> () {
-    if !cfg!(feature="remote-checks") {
-        return ();
-    }
-    if let Err(v) = uses.validate() {
-        state.errors.push(v);
+enum ActionType {
+    Action,
+    Docker,
+    Path,
+}
+
+fn _action_type<'a>(
+    action_type: ActionType,
+    origin: &String,
+    captures: &Captures<'a>,
+) -> Box<dyn models::Uses<'a>> {
+    let origin = origin.to_owned();
+    let uses = String::from(&captures[0]);
+    match action_type {
+        ActionType::Path => Box::new(models::Path{uses, origin}),
+        ActionType::Docker => Box::new(models::Docker {
+            uses,
+            origin,
+            // The `image` capture group is guranteed to exist when `Docker` does.
+            image: String::from(captures.name("image").unwrap().as_str()),
+            url: captures.name("url").map(|v| String::from(v.as_str())),
+            tag: captures.name("tag").map(|v| String::from(v.as_str())),
+        }),
+        ActionType::Action => Box::new(models::Action {
+            uses,
+            origin,
+            // The `owner`, `repo`, and `reference` capture groups are guranteed
+            // to exist when `Action` does.
+            owner: String::from(captures.name("owner").unwrap().as_str()),
+            repo: String::from(captures.name("repo").unwrap().as_str()),
+            reference: String::from(captures.name("ref").unwrap().as_str()),
+            path: captures.name("path").map(|v| String::from(v.as_str())),
+        }),
     }
 }
