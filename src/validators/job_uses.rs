@@ -7,7 +7,7 @@ use crate::validators::models;
 use super::models::Invalid;
 
 
-pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<()> {
+pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) {
     // If this regex doesn't compile, that should be considered a compile-time
     // error. As such, we should unwrap to purposefully panic in the event of
     // a malformed regex.
@@ -18,8 +18,10 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
     ].join("|");
     let r = Regex::new(format!(r"(?x)^{pattern}$").as_str()).unwrap();
 
+    let default_map = &serde_json::Map::<String, serde_json::Value>::new();
     let jobs_step_uses = doc["jobs"]
-        .as_object()?
+        .as_object()
+        .unwrap_or(default_map)
         .iter()
         .flat_map(|(job_name, job)| {
             Some((job_name, job["steps"].as_array()?.iter()))
@@ -36,17 +38,12 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
         let origin = format!("jobs/{job_name}/steps/uses/{uses}");
         let captures_op = &r.captures(uses);
 
-        let uses_type = vec![ActionType::Action, ActionType::Docker, ActionType::Path]
+        let uses_type = vec![
+            ActionType::Action, ActionType::Docker, ActionType::Path,
+        ]
             .into_iter()
             .find_map(|action_type| {
-                if let Some(captures) = captures_op {
-                    Some(_action_type(action_type, &origin, &captures))
-                } else {
-                    Some(Box::new(Invalid{
-                        uses: String::from(uses),
-                        origin: origin.to_owned(),
-                    }))
-                }
+                Some(_action_type(action_type, &origin, captures_op.as_ref()?))
             })
             .unwrap_or(Box::new(Invalid{
                 uses: String::from(uses),
@@ -57,8 +54,6 @@ pub fn validate(doc: &serde_json::Value, state: &mut ValidationState) -> Option<
             state.errors.push(v);
         }
     }
-
-    Some(())
 }
 
 enum ActionType {
