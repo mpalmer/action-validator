@@ -3,11 +3,18 @@ use crate::validation_error::ValidationError;
 #[cfg(feature="remote-checks")]
 use reqwest::{blocking::Response, StatusCode, blocking::Client};
 
+/// A method to perform a synchronous get request and return it's result.
+///
+/// # Arguments
+/// * url - The FQDN where the GET request will be sent.
 #[cfg(feature="remote-checks")]
 fn _get_request(url: String) -> Result<Response, reqwest::Error> {
     Client::new().get(url).send()
 }
 
+/// This trait provides a common method for all action type implementations to validate said action
+/// type. An implementation of `validate` should return a [`ValidationError`] if one were to occur,
+/// the validation error should be pushed onto the validation error stack.
 pub trait Uses<'a>: std::fmt::Debug {
     fn validate(&self) -> Result<(), ValidationError>;
 }
@@ -32,6 +39,9 @@ impl Uses<'_> for Action {
         Ok(())
     }
 
+    /// Remote-check validation logic for GitHub Actions. If the destructured action is able to be
+    /// retrieved from the repositories tree, then the action exists. Otherwise, the action is
+    /// formatted properly but does not exist.
     #[cfg(feature="remote-checks")]
     fn validate(&self) -> Result<(), ValidationError> {
         let response = _get_request(format!(
@@ -76,6 +86,10 @@ impl Uses<'_> for Docker {
         Ok(())
     }
 
+    /// Remote-check validation logic for Docker images. If the destructured image is able to be
+    /// retrieved from Docker Hub or using the registries v2 endpoints, then the image exists. If
+    /// the image results in a 401 (UNAUTHORIZED), the image _could_ exist. In this case,
+    /// action-validator will assume the image exists.
     #[cfg(feature="remote-checks")]
     fn validate(&self) -> Result<(), ValidationError> {
         let mut image = self.image.to_owned();
@@ -106,10 +120,11 @@ impl Uses<'_> for Docker {
             if status == StatusCode::OK {
                 return Ok(());
             } else if status == StatusCode::UNAUTHORIZED {
-                // In this case, pull access requires authorized. For now, we should assume
-                // this the tag is valid. We could perform authentication, but that would
-                // require user creds and add a whole lot of scope to this feature. For now, an
-                // unauthenticated requests means the image exists, and that is sufficient.
+                // In this case, pull access requires authorization. There are simple cases that
+                // only require the bearer token retrieval followed by manifest access, but there
+                // are also others that require user credentials. For now, we should assume that
+                // the tag tag is valid. We could perform authentication, but that would requrie
+                // user creds and adds a whole lot of scope to this feature.
                 return Ok(());
             } else if status == StatusCode::NOT_FOUND {
                 return Err(ValidationError::Unknown { 
@@ -128,8 +143,8 @@ impl Uses<'_> for Docker {
             }
         }
 
-        // How do we handle failed requests? If the user has the `remote-checks` feature enable,
-        // they likely want to know about these failures. We can mark this as a validation error.
+        // The remote-check request failed. If the user has the `remote-checks` feature enable,
+        // they likely want to know about these failures. We can mark this as an error.
         Err(ValidationError::Unknown { 
             code: "unexpected_server_response".into(),
             detail: Some(format!("Could not find docker action: {}", self.uses)),
@@ -150,6 +165,7 @@ impl Path {
 }
 
 impl Uses<'_> for Path {
+    /// Validates that the supplied path exists.
     fn validate(&self) -> Result<(), ValidationError> {
         if std::path::Path::new(self.uses.as_str()).exists() {
             return Ok(());
@@ -170,6 +186,9 @@ pub struct Invalid {
 }
 
 impl Uses<'_> for Invalid {
+    /// If the provided action is not a [`Docker`], [`Action`], or [`Path`], the action is invalid.
+    /// When this [`Uses`] implementation is created, the validation will always return a
+    /// validation error.
     fn validate(&self) -> Result<(), ValidationError> { 
         let uses = self.uses.to_owned();
         Err(ValidationError::InvalidGlob {
