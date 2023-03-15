@@ -22,6 +22,7 @@ crate-type = ["cdylib", "rlib"]
 [features]
 js = ["console_error_panic_hook", "valico/js"]
 remote-checks = ["reqwest"]
+save-snapshots = []
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
