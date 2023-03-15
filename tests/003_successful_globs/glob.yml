@@ -3,7 +3,7 @@ name: Test
 on:
   push:
     paths:
-      - 003_successful_globs/*
+      - ./tests/003_successful_globs/*
 
 defaults:
   run:

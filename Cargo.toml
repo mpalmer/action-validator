@@ -46,6 +46,8 @@ reqwest = { version = "0.11.14", features = ["blocking"], optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
+rstest = "0.16.0"
+assert_cmd = "2.0.8"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

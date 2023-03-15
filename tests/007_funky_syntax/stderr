@@ -3,20 +3,20 @@ Validation failed: ValidationState {
         Workflow,
     ),
     file_path: Some(
-        "009_multi_file/xinvalid.yml",
+        "./tests/007_funky_syntax/rust-check.yml",
     ),
     errors: [
         Parse {
             code: "parse_error",
             detail: Some(
-                "mapping values are not allowed in this context at line 36 column 15",
+                "mapping values are not allowed in this context at line 38 column 15",
             ),
             path: "",
             title: "Parse Error",
             location: Some(
                 ParseErrorLocation {
-                    index: 872,
-                    line: 36,
+                    index: 1069,
+                    line: 38,
                     column: 15,
                 },
             ),
