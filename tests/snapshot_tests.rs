@@ -55,6 +55,7 @@ impl SnapshotTest {
 
 use assert_cmd::Command;
 
+#[cfg(not(feature = "remote-checks"))]
 #[rstest]
 #[case("001_basic_workflow")]
 #[case("002_basic_action")]
@@ -66,6 +67,24 @@ use assert_cmd::Command;
 #[case("008_job_dependencies")]
 #[case("009_multi_file")]
 fn snapshot(#[case] dir_name: String) {
+
+    let test = SnapshotTest::new(dir_name);
+    Command::cargo_bin(
+        env!("CARGO_PKG_NAME"),
+    )
+    .expect("binary to execute")
+    .args(test.test_files)
+    .assert()
+    .stdout(test.stdout)
+    .stderr(test.stderr)
+    .code(test.exitcode);
+}
+
+#[cfg(feature = "remote-checks")]
+#[rstest]
+#[case("010_remote_checks_ok")]
+#[case("011_remote_checks_failure")]
+fn snapshot_remote_checks(#[case] dir_name: String) {
 
     let test = SnapshotTest::new(dir_name);
     Command::cargo_bin(
