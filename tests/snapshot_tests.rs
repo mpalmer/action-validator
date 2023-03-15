@@ -84,7 +84,7 @@ impl SnapshotTest {
             if exitcode > 0 {
                 self._save_contents(
                     format!("./tests/{test_dir}/exitcode"),
-                    format!("{exitcode}").into(),
+                    format!("{exitcode}\n").into(),
                 );
             }
         }
