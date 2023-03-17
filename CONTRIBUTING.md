@@ -71,6 +71,23 @@ Options:
 ```
 
 # Writing Tests
-```
-TODO: This section could use some help.
-```
+All tests live in the `tests` directory. Currently, this project implements snapshot testing,
+but that's not to say you couldn't write unit or integration tests with the current structure.
+To run the tests, simply run `cargo test` from the root directory. If you want to test a specific
+feature, you can add the `-F {feature}` flag (e.g. `cargo test -F remote-checks`).
+
+## Unit/Integration Tests
+As of this writing, there are no unit or integration tests. If you are looking to write some, please
+follow the directions in [this guide](https://doc.rust-lang.org/book/ch11-01-writing-tests.html).
+
+## Snapshot Tests
+A snapshot test is performed when we execute the cli and capture `stdout`, `stderr`, and/or an exit code.
+When the tests is run, the results of the test must exactly match those of the previous run. For this project,
+the snapshot tests are named in the format `{next_id}_{whats_being_tested}` (e.g. `011_remote_checks_failure`).
+
+If you have made changes which will change the output of the program and cause snapshots to fail, you can run
+`cargo test -F save-snapshots`. This feature causes the executed command to save the `stdout`, `stderr`, and/or
+exit code to the specified testing directory.
+
+If you are writing a net new test, you will need to create the test directory with your workflow or action file.
+Once you're done, you can save the results to that directy by running `cargo test -F save-snapshots`.
