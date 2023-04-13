@@ -166,7 +166,7 @@ jobs:
           submodules: true
 
       - name: Install action-validator with asdf
-        uses: asdf-vm/actions/install@v1
+        uses: asdf-vm/actions/install@v2
         with:
           tool_versions: |
             action-validator 0.1.2
