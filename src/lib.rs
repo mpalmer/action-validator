@@ -2,14 +2,16 @@ mod config;
 mod log;
 mod schemas;
 mod utils;
+mod validators;
 mod validation_error;
 mod validation_state;
 
-use config::{ActionType, RunConfig};
+
 use validation_error::ValidationError;
 use validation_state::ValidationState;
 
 pub use crate::config::CliConfig;
+use config::{ActionType, RunConfig};
 use crate::schemas::{validate_as_action, validate_as_workflow};
 #[cfg(not(feature = "js"))]
 use glob::glob;
@@ -148,7 +150,7 @@ fn run(config: &RunConfig) -> ValidationState {
 
                 validate_paths(&doc, &mut state);
                 validate_job_needs(&doc, &mut state);
-
+                validators::job_uses::validate(&doc, &mut state);
                 state
             }
         },
