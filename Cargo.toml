@@ -11,7 +11,11 @@ include = [
 	"/src/schemastore/src/schemas/json/github-action.json"
 ]
 version = "0.0.0-git"
-authors = ["Matt Palmer <matt@hezmatt.org>"]
+authors = [
+	"Matt Palmer <matt@hezmatt.org>",
+	"Ben Heidemann <ben@heidemann.co.uk>",
+	"Austin Ward <ward.austin28@gmail.com>"
+]
 edition = "2021"
 # If this is changed, .github/workflows/qa.yml build matrix needs updating as well
 rust-version = "1.60.0"
@@ -21,6 +25,7 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 js = ["console_error_panic_hook", "valico/js"]
+save-snapshots = []
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
@@ -43,6 +48,8 @@ serde-wasm-bindgen = "0.4.5"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
+rstest = "0.16.0"
+assert_cmd = "2.0.8"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

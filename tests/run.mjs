@@ -9,9 +9,9 @@ const update = process.argv.includes("--update") || process.argv.includes("-u");
 const start = Date.now();
 
 const passed = fs
-  .readdirSync("test")
-  // get all directories in test/
-  .map((entry) => `test/${entry}`)
+  .readdirSync("tests")
+  // get all directories in tests/
+  .map((entry) => `tests/${entry}`)
   .filter((entry) => fs.statSync(entry).isDirectory())
   // get the first .yml files in each directory
   .map((testDir) => [testDir, ...fs.readdirSync(testDir)])

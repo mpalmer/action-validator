@@ -44,11 +44,8 @@ jobs:
       - name: Shellcheck
         uses: ludeeus/action-shellcheck@master
 
-      - name: Install shfmt
-        uses: mfinelli/setup-shfmt@master
-
-      - name: Run shfmt
-        run: shfmt -d bin/* test/run
+      - name: Run Cargo Test
+        run: cargo test
 
       - name: Setup Node
         uses: actions/setup-node@v3
