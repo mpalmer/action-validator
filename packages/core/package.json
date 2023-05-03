@@ -21,7 +21,7 @@
   "types": "action_validator.d.ts",
   "scripts": {
     "build": "npx wasm-pack build --out-dir target/wasm-pack/build --no-typescript --target nodejs --features js && cp target/wasm-pack/build/action_validator_bg.wasm dist/ && cp target/wasm-pack/build/action_validator.js dist/ && cp target/wasm-pack/build/action_validator.js dist/",
-    "test": "node test/run.mjs",
+    "test": "node tests/run.mjs",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   }
