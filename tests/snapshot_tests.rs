@@ -126,15 +126,6 @@ impl SnapshotTest {
 #[case("007_funky_syntax")]
 #[case("008_job_dependencies")]
 #[case("009_multi_file")]
-#[cfg(not(feature = "remote-checks"))]
 fn snapshot(#[case] dir_name: String) {
-    SnapshotTest::new(dir_name).execute();
-}
-
-#[rstest]
-#[case("010_remote_checks_ok")]
-#[case("011_remote_checks_failure")]
-#[cfg(feature = "remote-checks")]
-fn snapshot_remote_checks(#[case] dir_name: String) {
     SnapshotTest::new(dir_name).execute();
 }
