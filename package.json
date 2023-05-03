@@ -5,7 +5,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "build": "npx wasm-pack build --out-dir target/wasm-pack/build --no-typescript --target nodejs --features js && cp target/wasm-pack/build/action_validator_bg.wasm packages/core/ && cp target/wasm-pack/build/action_validator.js packages/core/ && cp target/wasm-pack/build/action_validator.js packages/core/",
-    "test": "node test/run.mjs",
+    "test": "node tests/run.mjs",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },
