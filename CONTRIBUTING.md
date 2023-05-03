@@ -23,7 +23,7 @@ To confirm that rust is installed, run the `cargo` command. If you don't receive
 ## Git Submodule Setup
 This repository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Specifically for the use of [schemastore](https://github.com/SchemaStore/schemastore). 
 
-To setup the git submodule after cloning this repo to your  local, you'll want to run the following commands:
+To setup the git submodule after cloning this repo to your local, you'll want to run the following commands:
 1. `git submodule init`
 2. `git submodule update`
 
