@@ -26,6 +26,7 @@ macro_rules! validation_errors {
     ($( $name:ident $( { $($fields:tt)* } )? ),*) => {
         #[derive(Serialize, Debug)]
         #[serde(untagged)]
+        #[allow(dead_code)] // JS doesn't instantiate some of the validation errors at present
         pub enum ValidationError {
             $(
                 $name {
