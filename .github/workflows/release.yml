@@ -30,13 +30,19 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-          default: true
+          targets: ${{ matrix.target }}
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-binary-release
 
       - name: Set Cargo.toml version
         shell: bash
@@ -49,10 +55,8 @@ jobs:
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
 
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --locked
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} build --release --locked
 
       - name: Upload
         uses: svenstaro/upload-release-action@v2
@@ -71,12 +75,9 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          default: true
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Set Cargo.toml version
         shell: bash
@@ -109,13 +110,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Rust
+      - name: Install rust
         if: matrix.package-dir == 'packages/core'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          default: true
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Setup Node
         uses: actions/setup-node@v3

@@ -18,7 +18,59 @@ jobs:
         with:
           submodules: true
 
-      - name: Audit
-        uses: actions-rs/audit-check@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache
+        uses: actions/cache@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-audit
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
+
+      - name: Audit deps
+        run: |
+          cargo audit -D warnings
+
+  nightly_compat:
+    name: See if future Rust versions (or deps) will break anything
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: clippy
+
+      # Normally this would be where we use actions/cache, but since nightly
+      # is likely to change on every run, it doesn't seem worth it
+
+      - name: Update deps
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} update
+
+      - name: Test
+        env:
+          RUSTFLAGS: -D warnings
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} test
+          cargo +${{ steps.rust-install.outputs.name }} test --all-features
+
+      - name: Clippy
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} clippy -- -D warnings
+          cargo +${{ steps.rust-install.outputs.name }} clippy --all-features -- -D warnings
