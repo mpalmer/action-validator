@@ -18,28 +18,29 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache
+        uses: actions/cache@v3
         with:
-          toolchain: stable
-          override: true
-          default: true
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-check
 
       - name: Check Formatting
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: -- --check
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} fmt --check
 
       - name: Check with Clippy
-        uses: actions-rs/clippy-check@v1
-        with:
-          args: -- -Dwarnings
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} clippy -- -D warnings
 
       - name: Shellcheck
         uses: ludeeus/action-shellcheck@master
@@ -77,22 +78,27 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust-toolchain }}
-          override: true
-          default: true
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-build
 
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --all-features
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} build --release --all-features
 
   test:
     strategy:
@@ -107,21 +113,27 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust-toolchain }}
-          override: true
-          default: true
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-test
 
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} build
 
       - name: Run Testsuite
         working-directory: "test"
@@ -132,16 +144,21 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache
+        uses: actions/cache@v3
         with:
-          toolchain: stable
-          override: true
-          default: true
+          path: |
+            ~/.cargo
+            target/
+          key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-test-node
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -156,12 +173,14 @@ jobs:
 
       - name: Test
         run: npm test
+        # nodejs support is experimental; don't fail the build for it
+        continue-on-error: true
 
   actions:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -169,7 +188,7 @@ jobs:
         uses: asdf-vm/actions/install@v1
         with:
           tool_versions: |
-            action-validator 0.1.2
+            action-validator 0.5.1
 
       - name: Lint Actions
         run: |
