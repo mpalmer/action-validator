@@ -22,17 +22,18 @@ jobs:
         with:
           submodules: true
 
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
-
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
             ~/.cargo
+            ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-check
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Check Formatting
         run: |
@@ -82,19 +83,20 @@ jobs:
         with:
           submodules: true
 
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust-toolchain }}
-
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
             ~/.cargo
+            ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-build
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-toolchain }}
 
       - name: Build
         run: |
@@ -117,19 +119,20 @@ jobs:
         with:
           submodules: true
 
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust-toolchain }}
-
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
             ~/.cargo
+            ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-test
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-toolchain }}
 
       - name: Build
         run: |
@@ -148,21 +151,23 @@ jobs:
         with:
           submodules: true
 
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
-
       - name: Cache
         uses: actions/cache@v3
         with:
           path: |
             ~/.cargo
+            ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-test-node
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
+          cache: npm
           node-version: 18
 
       - name: Install Dependencies
