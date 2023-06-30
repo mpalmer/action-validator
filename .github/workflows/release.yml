@@ -47,6 +47,7 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Set Cargo.toml version
+        if: github.event_name == 'release'
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref }}
@@ -91,6 +92,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Set Cargo.toml version
+        if: github.event_name == 'release'
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref }}
@@ -156,6 +158,7 @@ jobs:
         run: npm ci
 
       - name: Set package.json version
+        if: github.event_name == 'release'
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref }}
