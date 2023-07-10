@@ -84,7 +84,7 @@ action-validator .github/workflows/build.yml
 
 Use `action-validator -h` to see additional options.
 
-> ### CAUTION
+> ### ⚠️ CAUTION
 >
 > As the intended use-case for `action-validator` is in pre-commit hooks,
 > it assumes that it is being run from the root of the repository. Glob
@@ -167,7 +167,7 @@ action-validator scanned 2 GitHub Actions found no errors!
 
 ## NPM
 
-Provided you have followed the [installation instructions for NPM](#npm-package), you can run the action
+Provided you have followed the [installation instructions for NPM](#using-npm), you can run the action
 validator CLI as follows
 
 ```sh
