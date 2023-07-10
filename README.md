@@ -84,7 +84,7 @@ action-validator .github/workflows/build.yml
 
 Use `action-validator -h` to see additional options.
 
-> ### ⚠️ CAUTION
+> ### CAUTION
 >
 > As the intended use-case for `action-validator` is in pre-commit hooks,
 > it assumes that it is being run from the root of the repository. Glob
