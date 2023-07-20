@@ -67,7 +67,7 @@ If you want to build locally, you'll need to:
 
 1. Checkout the git repository somewhere;
 
-1. Grab the `SchemaStore` submodule, by running `git submodule init`;
+1. Grab the `SchemaStore` submodule, by running `git submodule init && git submodule update`;
 
 1. Install a [Rust](https://rust-lang.org) toolchain; and then
 
