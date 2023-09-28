@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - "**/Cargo.*"
+      - ".github/workflows/audit.yml"
   pull_request:
     branches:
       - main

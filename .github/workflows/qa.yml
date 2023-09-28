@@ -2,6 +2,8 @@ name: Quality Control
 
 on:
   push:
+    paths:
+      - ".github/workflows/qa.yml"
     branches:
       - main
   pull_request:
