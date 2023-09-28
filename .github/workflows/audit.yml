@@ -21,18 +21,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo
-            ~/.rustup
-            target/
-          key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-audit
-
       - name: Install rust
         id: rust-install
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
 
       - name: Install cargo-audit
         run: cargo install cargo-audit
