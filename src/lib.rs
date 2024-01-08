@@ -196,7 +196,7 @@ fn validate_globs(globs: &serde_json::Value, path: &str, state: &mut ValidationS
 
     if let Some(globs) = globs.as_array() {
         for g in globs {
-            match glob(g.as_str().unwrap().replace("!", "")) {
+            match glob(&g.as_str().unwrap().replace("!", "")) {
                 Ok(res) => {
                     if res.count() == 0 {
                         state.errors.push(ValidationError::NoFilesMatchingGlob {
