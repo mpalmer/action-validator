@@ -11,8 +11,6 @@ use validation_state::ValidationState;
 
 pub use crate::config::CliConfig;
 use crate::schemas::{validate_as_action, validate_as_workflow};
-#[cfg(not(feature = "js"))]
-use serde_json::{Map, Value};
 
 #[cfg(feature = "js")]
 mod js {
@@ -231,7 +229,10 @@ fn validate_globs(globs: &serde_json::Value, path: &str, state: &mut ValidationS
 }
 
 fn validate_job_needs(doc: &serde_json::Value, state: &mut ValidationState) {
-    fn is_invalid_dependency(jobs: &Map<String, Value>, need_str: &str) -> bool {
+    fn is_invalid_dependency(
+        jobs: &serde_json::Map<String, serde_json::Value>,
+        need_str: &str,
+    ) -> bool {
         !jobs.contains_key(need_str)
     }
 
