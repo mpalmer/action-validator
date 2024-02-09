@@ -1,0 +1,9 @@
+name: 'missing shell'
+description: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: "say hello"
+      run: |
+        echo "Hello world"
