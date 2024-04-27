@@ -1,4 +1,4 @@
-name: Security audit
+name: Periodic audit
 on:
   schedule:
     - cron: "0 0 * * *"
