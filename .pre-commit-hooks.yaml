@@ -1,6 +1,6 @@
--   id: action-validator
-    name: 'action validator'
-    entry: bin/run-action-validator
-    files: '.github/workflows/.*\.ya?ml'
-    language: 'script'
-    description: "Validate GitHub Actions workflows"
+- id: action-validator
+  name: Validate GitHub Actions workflows
+  description: "Validate GitHub Actions workflows"
+  entry: action-validator
+  language: rust
+  files: '.github/workflows/.*\.ya?ml'
