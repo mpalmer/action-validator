@@ -1,9 +1,6 @@
 # Ignore everything
 *
 
-# But not .mjs files
-!*.mjs
-!*.js
-
-# In all subdirectories
-!*/
+# But not JavaScript files in the packages directory
+!packages/**/*.mjs
+!packages/**/*.js
