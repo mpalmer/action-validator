@@ -1,3 +1,4 @@
+mod cli;
 mod config;
 mod log;
 mod schemas;
@@ -9,7 +10,7 @@ use config::{ActionType, RunConfig};
 use validation_error::ValidationError;
 use validation_state::ValidationState;
 
-pub use crate::config::CliConfig;
+pub use crate::cli::CliConfig;
 use crate::schemas::{validate_as_action, validate_as_workflow};
 
 #[cfg(feature = "js")]
@@ -54,7 +55,7 @@ mod js {
 }
 
 #[cfg(not(feature = "js"))]
-pub mod cli {
+pub mod cli_runtime {
     use std::fs;
 
     use crate::{

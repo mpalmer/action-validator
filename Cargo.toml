@@ -15,6 +15,7 @@ authors = ["Matt Palmer <matt@hezmatt.org>"]
 edition = "2021"
 # If this is changed, .github/workflows/qa.yml build matrix needs updating as well
 rust-version = "1.60.0"
+build = "build.rs"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -23,7 +24,7 @@ crate-type = ["cdylib", "rlib"]
 js = ["console_error_panic_hook", "valico/js"]
 
 [dependencies]
-clap = { version = "4.0", features = ["derive"] }
+clap = { version = "4.5.23", features = ["derive"] }
 glob = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -40,6 +41,11 @@ wasm-bindgen = "0.2.63"
 console_error_panic_hook = { version = "0.1.6", optional = true }
 
 serde-wasm-bindgen = "0.4.5"
+
+[build-dependencies]
+clap = { version = "4.5", features = ["derive"] }
+clap_complete = "4.2"
+clap_mangen = "0.2"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"
