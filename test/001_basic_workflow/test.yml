@@ -52,6 +52,7 @@ jobs:
 
   build:
     strategy:
+      fail-fast: false
       matrix:
         rust-toolchain:
           - stable
