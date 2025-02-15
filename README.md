@@ -45,7 +45,7 @@ asdf list-all action-validator
 asdf install action-validator latest
 
 # Set a version globally (on your ~/.tool-versions file)
-asdf global action-validator latest
+asdf set -u action-validator latest
 
 # Now action-validator commands are available
 action-validator --help
