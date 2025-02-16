@@ -51,6 +51,9 @@ jobs:
 
       - name: Shellcheck
         uses: ludeeus/action-shellcheck@master
+        with:
+          ignore_names: >-
+            action-validator.bash
 
       - name: Install shfmt
         uses: mfinelli/setup-shfmt@master
@@ -75,7 +78,7 @@ jobs:
         rust-toolchain:
           - stable
           - nightly
-          - 1.64.0
+          - 1.74.1
         os:
           - ubuntu-latest
           - macos-latest
