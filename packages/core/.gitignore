@@ -1,3 +1,4 @@
 /node_modules
+/snippets
 action_validator_bg.wasm
 action_validator.js

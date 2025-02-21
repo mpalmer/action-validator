@@ -1,6 +1,6 @@
 mod config;
-mod log;
 mod schemas;
+mod system;
 mod utils;
 mod validation_error;
 mod validation_state;
@@ -14,11 +14,45 @@ use crate::schemas::{validate_as_action, validate_as_workflow};
 
 #[cfg(feature = "js")]
 mod js {
+    use super::cli;
+    use crate::config::CliConfig;
+    use crate::system;
     use crate::{
         config::{ActionType, JsConfig},
         utils::set_panic_hook,
     };
+    use clap::Parser as _;
+    use js_sys::Array;
     use wasm_bindgen::prelude::*;
+
+    #[wasm_bindgen(js_name = main)]
+    pub fn main(args: Array) -> JsValue {
+        set_panic_hook();
+
+        let rust_args: Vec<String> = args
+            .iter()
+            .map(|arg| arg.as_string().unwrap_or_default())
+            .collect();
+
+        let config = match CliConfig::try_parse_from(rust_args) {
+            Ok(config) => config,
+            Err(error) => {
+                let error_text = if system::process::stdout::is_tty() {
+                    format!("{}", error.render().ansi())
+                } else {
+                    error.render().to_string()
+                };
+                system::console::error(&error_text);
+                system::process::exit(error.exit_code());
+            }
+        };
+
+        if matches!(cli::run(&config), cli::RunResult::Failure) {
+            system::process::exit(1);
+        }
+
+        system::process::exit(0);
+    }
 
     #[wasm_bindgen(js_name = validateAction)]
     pub fn validate_action(src: &str) -> JsValue {
@@ -53,13 +87,10 @@ mod js {
     }
 }
 
-#[cfg(not(feature = "js"))]
 pub mod cli {
-    use std::fs;
-
     use crate::{
         config::{ActionType, RunConfig},
-        CliConfig,
+        system, CliConfig,
     };
 
     pub enum RunResult {
@@ -80,10 +111,10 @@ pub mod cli {
                 }
             };
 
-            let src = &match fs::read_to_string(path) {
+            let src = &match system::fs::read_to_string(path) {
                 Ok(src) => src,
                 Err(err) => {
-                    eprintln!("Unable to read file: {err}");
+                    system::console::error(&format!("Unable to read file: {err}"));
                     success = false;
                     continue;
                 }
@@ -105,8 +136,8 @@ pub mod cli {
             if !state.is_valid() {
                 let fmt_state = format!("{state:#?}");
                 let path = state.file_path.unwrap_or("file".into());
-                println!("Fatal error validating {path}");
-                eprintln!("Validation failed: {fmt_state}");
+                system::console::log(&format!("Fatal error validating {path}"));
+                system::console::log(&format!("Validation failed: {fmt_state}"));
                 success = false;
             }
         }
@@ -132,13 +163,13 @@ fn run(config: &RunConfig) -> ValidationState {
         Ok(doc) => match config.action_type {
             ActionType::Action => {
                 if config.verbose {
-                    log::log(&format!("Treating {file_name} as an Action definition"));
+                    system::console::log(&format!("Treating {file_name} as an Action definition"));
                 }
                 validate_as_action(&doc)
             }
             ActionType::Workflow => {
                 if config.verbose {
-                    log::log(&format!("Treating {file_name} as a Workflow definition"));
+                    system::console::log(&format!("Treating {file_name} as a Workflow definition"));
                 }
                 // TODO: Re-enable path and job validation
                 let mut state = validate_as_workflow(&doc);
@@ -179,7 +210,7 @@ fn validate_paths(doc: &serde_json::Value, state: &mut ValidationState) {
 #[cfg(feature = "js")]
 fn validate_globs(value: &serde_json::Value, path: &str, _: &mut ValidationState) {
     if !value.is_null() {
-        log::warn(&format!(
+        system::console::warn(&format!(
             "WARNING: Glob validation is not yet supported. Glob at {path} will not be validated."
         ));
     }

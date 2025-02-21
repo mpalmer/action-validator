@@ -24,5 +24,6 @@ export type ValidationState = {
   errors: ValidationError[];
 };
 
+export function main(args: string[]): never;
 export function validateAction(src: string): ValidationState;
 export function validateWorkflow(src: string): ValidationState;
