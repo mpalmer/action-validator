@@ -21,7 +21,7 @@ pub fn read_to_string<P>(path: P) -> Result<String, String>
 where
     P: AsRef<Path>,
 {
-    js_fs::read_file_sync(&path.as_ref().to_string_lossy().to_string(), "utf8")
+    js_fs::read_file_sync(path.as_ref().to_string_lossy().as_ref(), "utf8")
         .map_err(|e| format!("{}", e.to_string()))
 }
 
