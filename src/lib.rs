@@ -137,7 +137,7 @@ pub mod cli {
                 let fmt_state = format!("{state:#?}");
                 let path = state.file_path.unwrap_or("file".into());
                 system::console::log(&format!("Fatal error validating {path}"));
-                system::console::log(&format!("Validation failed: {fmt_state}"));
+                system::console::error(&format!("Validation failed: {fmt_state}"));
                 success = false;
             }
         }
