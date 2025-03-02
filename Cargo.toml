@@ -20,8 +20,10 @@ rust-version = "1.60.0"
 crate-type = ["cdylib", "rlib"]
 
 [features]
+default = ["assert_cmd"]
 js = ["console_error_panic_hook", "valico/js"]
-save-snapshots = []
+test-save-snapshots = []
+test-js = []
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
@@ -44,7 +46,7 @@ serde-wasm-bindgen = "0.4.5"
 js-sys = "0.3.77"
 is-terminal = "0.4.7"
 fixtures = "0.1.0"
-assert_cmd = "2.0.8"
+assert_cmd = { version = "2.0.8", optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"

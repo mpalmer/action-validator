@@ -25,7 +25,7 @@ impl SnapshotTest {
         }
     }
 
-    #[cfg(not(feature = "save-snapshots"))]
+    #[cfg(not(feature = "test-save-snapshots"))]
     fn execute(self) {
         let stderr = fs::read_to_string(self.test_dir.join("stderr")).unwrap_or(String::from(""));
 
@@ -40,6 +40,7 @@ impl SnapshotTest {
             })
             .unwrap_or(0);
 
+        #[cfg(not(feature = "test-js"))]
         Command::cargo_bin(env!("CARGO_PKG_NAME"))
             .expect("binary to execute")
             .args(self.workflow_files)
@@ -47,9 +48,18 @@ impl SnapshotTest {
             .stdout(stdout)
             .stderr(stderr)
             .code(exitcode);
+
+        #[cfg(feature = "test-js")]
+        Command::new("npx")
+            .arg("action-validator")
+            .args(self.workflow_files)
+            .assert()
+            .stdout(stdout)
+            .stderr(stderr)
+            .code(exitcode);
     }
 
-    #[cfg(feature = "save-snapshots")]
+    #[cfg(feature = "test-save-snapshots")]
     fn execute(&self) {
         use std::fs::File;
         use std::io::prelude::*;
