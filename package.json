@@ -3,9 +3,12 @@
   "private": true,
   "version": "0.0.0-git",
   "license": "GPL-3.0-only",
+  "workspaces": ["packages/*"],
   "scripts": {
-    "build": "npx wasm-pack build --out-dir target/wasm-pack/build --no-typescript --target nodejs --features js && cp target/wasm-pack/build/action_validator_bg.wasm packages/core/ && cp target/wasm-pack/build/action_validator.js packages/core/ && cp target/wasm-pack/build/action_validator.js packages/core/",
-    "test": "node test/run.mjs",
+    "build": "./scripts/build-wasm.sh",
+    "build:dev": "WASM_PACK_BUILD_FLAGS='--no-opt' ./scripts/build-wasm.sh",
+    "test": "./scripts/test-wasm.sh",
+    "test:dev": "WASM_PACK_BUILD_FLAGS='--no-opt' ./scripts/test-wasm.sh",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },
@@ -13,6 +16,6 @@
     "chalk": "5.2.0",
     "diff": "5.1.0",
     "prettier": "2.8.4",
-    "wasm-pack": "0.10.3"
+    "wasm-pack": "0.13.1"
   }
 }
