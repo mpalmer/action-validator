@@ -3,7 +3,7 @@ name: Bad globs, no biscuit
 on:
   push:
     paths:
-      - 004_bad_globs/*.txt
+      - tests/fixtures/004_failing_globs/*.txt
 
 defaults:
   run:

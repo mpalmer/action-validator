@@ -3,7 +3,7 @@ Validation failed: ValidationState {
         Action,
     ),
     file_path: Some(
-        "010_missing_shell_in_action/action.yml",
+        "tests/fixtures/010_missing_shell_in_action/action.yml",
     ),
     errors: [
         OneOf {

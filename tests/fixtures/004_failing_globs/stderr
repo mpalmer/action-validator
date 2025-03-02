@@ -3,13 +3,13 @@ Validation failed: ValidationState {
         Workflow,
     ),
     file_path: Some(
-        "004_failing_globs/glob.yml",
+        "tests/fixtures/004_failing_globs/glob.yml",
     ),
     errors: [
         NoFilesMatchingGlob {
             code: "glob_not_matched",
             detail: Some(
-                "Glob \"004_bad_globs/*.txt\" in /on/push/paths does not match any files",
+                "Glob \"tests/fixtures/004_failing_globs/*.txt\" in /on/push/paths does not match any files",
             ),
             path: "/on/push/paths",
             title: "Glob does not match any files",

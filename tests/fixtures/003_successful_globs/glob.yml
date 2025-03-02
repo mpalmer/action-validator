@@ -3,8 +3,8 @@ name: Test
 on:
   push:
     paths:
-      - 003_successful_globs/*
-      - '!003_successful_globs/*.json'
+      - tests/fixtures/003_successful_globs/*
+      - '!tests/fixtures/003_successful_globs/*.json'
 
 defaults:
   run:
