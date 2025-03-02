@@ -16,12 +16,12 @@
 # Environment Setup
 
 ## Install Rust
-Firstly, you'll need make any changes to the core functionality of this project. We recommend use `rustup`, on the recommendation of the rust team. You can find the installation instructions [here](https://www.rust-lang.org/tools/install).
+Firstly, you'll need a Rust toolchain to make any changes to the core functionality of this project. We recommend [using `rustup`](https://www.rust-lang.org/tools/install), because that's what the Rust core team recommend.
 
 To confirm that rust is installed, run the `cargo` command. If you don't receive the help docs output, you may need to add rust to your shell rc file.
 
 ## Git Submodule Setup
-This repository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Specifically for the use of [schemastore](https://github.com/SchemaStore/schemastore). 
+This repository uses [git submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Specifically for the use of [schemastore](https://github.com/SchemaStore/schemastore).
 
 To setup the git submodule after cloning this repo to your local, you'll want to run the following commands:
 1. `git submodule init`
@@ -38,7 +38,14 @@ Cloning into '/Users/someuser/action-validator/src/schemastore'...
 Submodule path 'src/schemastore': checked out 'd3e6ab7727380b214acbab05570fb09a3e5d2dfc'
 ```
 
-At this point, you should be all set to `cargo run`! If you run into any issues here, please [create an issue](https://github.com/mpalmer/action-validator/issues/new/choose).
+At this point, you should be all set to `cargo run`!
+
+## Node/WASM Setup
+If you plan to work on the WASM/Node bindings, you'll also need to install Node. We recommend using a [NVM](https://github.com/nvm-sh/nvm) to install the Node version listed in `.nvmrc`.
+
+Once Node is installed, run `npm install` at the root of the repository.
+
+You should now be all set to run `npm build`, to build the Node/WASM bindings. Once built, run `npx action-validator` to run the CLI via the Node/WASM bindings.
 
 # Running the Validator Locally
 
@@ -71,6 +78,7 @@ Options:
 ```
 
 # Writing Tests
+
 All tests live in the `tests` directory. Currently, this project implements snapshot testing,
 but that's not to say you couldn't write unit or integration tests with the current structure.
 To run the tests, simply run `cargo test` from the root directory. If you want to test a specific
@@ -86,8 +94,14 @@ When the tests is run, the results of the test must exactly match those of the p
 the snapshot tests are named in the format `{next_id}_{whats_being_tested}` (e.g. `011_remote_checks_failure`).
 
 If you have made changes which will change the output of the program and cause snapshots to fail, you can run
-`cargo test -F save-snapshots`. This feature causes the executed command to save the `stdout`, `stderr`, and/or
+`cargo test -F test-save-snapshots`. This feature causes the executed command to save the `stdout`, `stderr`, and/or
 exit code to the specified testing directory.
 
 If you are writing a net new test, you will need to create the test directory with your workflow or action file.
-Once you're done, you can save the results to that directy by running `cargo test -F save-snapshots`.
+Once you're done, you can save the results to that directy by running `cargo test -F test-save-snapshots`.
+
+# Testing Node/WASM Bindings
+
+To test against the Node/WASM bindings, you can run `npm test`, or `npm test:dev` (to skip optimisations).
+Note that Node support is considered experiemental, and does not have one to one feature parity with the native binary yet.
+As such, some tests may fail, even on `main`.
