@@ -34,13 +34,4 @@ pub mod stdout {
         use super::js_process;
         js_process::STDOUT_IS_TTY.with(bool::clone)
     }
-
-    #[cfg(not(feature = "js"))]
-    pub fn is_tty() -> bool {
-        // IsTerminal is implemented in the standard library as of Rust 1.70.
-        // However, we currently support versions < 1.70, so we're using a third
-        // party crate.
-        use is_terminal::IsTerminal as _;
-        std::io::stdout().is_terminal()
-    }
 }
