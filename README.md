@@ -179,11 +179,11 @@ Or, if you've installed the package globally:
 action-validator <path_to_action_yaml>
 ```
 
+The CLI distributed via NPM supports all the same options as the native binary.
+
 ## Node API
 
 The Node API can be used to validate action and workflow files from Node.js as follows:
-
-> ⚠️ The Node API does not currently support glob validation.
 
 ```ts
 import { readFileSync } from "fs";
