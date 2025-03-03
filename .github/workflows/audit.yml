@@ -70,3 +70,46 @@ jobs:
         run: |
           cargo +${{ steps.rust-install.outputs.name }} clippy -- -D warnings
           cargo +${{ steps.rust-install.outputs.name }} clippy --all-features -- -D warnings
+
+  nightly_compat_node:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Update deps
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} update
+
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version: nightly
+
+      - name: Update Dependencies
+        run: npm update
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+        # nodejs support is experimental; don't fail the build for it
+        continue-on-error: true
+
+      - name: Test
+        run: npm test
+        # nodejs support is experimental; don't fail the build for it
+        continue-on-error: true
