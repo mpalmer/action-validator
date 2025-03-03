@@ -207,16 +207,6 @@ fn validate_paths(doc: &serde_json::Value, state: &mut ValidationState) {
     );
 }
 
-#[cfg(feature = "js")]
-fn validate_globs(value: &serde_json::Value, path: &str, _: &mut ValidationState) {
-    if !value.is_null() {
-        system::console::warn(&format!(
-            "WARNING: Glob validation is not yet supported. Glob at {path} will not be validated."
-        ));
-    }
-}
-
-#[cfg(not(feature = "js"))]
 fn validate_globs(globs: &serde_json::Value, path: &str, state: &mut ValidationState) {
     if globs.is_null() {
         return;
@@ -231,9 +221,9 @@ fn validate_globs(globs: &serde_json::Value, path: &str, state: &mut ValidationS
                 glob.to_string()
             };
 
-            match glob::glob(&pattern) {
-                Ok(res) => {
-                    if res.count() == 0 {
+            match system::glob::glob_count_matches(&pattern) {
+                Ok(count) => {
+                    if count == 0 {
                         state.errors.push(ValidationError::NoFilesMatchingGlob {
                             code: "glob_not_matched".into(),
                             path: path.into(),

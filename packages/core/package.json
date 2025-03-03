@@ -24,5 +24,8 @@
     "test": "node test/run.mjs",
     "lint": "prettier --check .",
     "format": "prettier --write ."
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3"
   }
 }
