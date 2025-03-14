@@ -97,6 +97,8 @@ Use `action-validator -h` to see additional options.
 The action-validator can be run in a Github action itself, as a pull request job. See the `actions` job in the [QA workflow](https://github.com/mpalmer/action-validator/tree/main/.github/workflows/qa.yml), in this repository, as an example of how to use action-validator + asdf in a GitHub workflow.
 This may seem a little redundant (after all, an action has to be valid in order for GitHub to run it), but this job will make sure that all your *other* actions are also valid.
 
+A [GitHub action](https://github.com/marketplace/actions/github-action-validator) exists in the Actions Marketplace to make this even easier.
+
 ## Using pre-commit
 
 Update your .pre-commit-config.yaml:
