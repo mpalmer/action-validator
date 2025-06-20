@@ -1,0 +1,41 @@
+name: Update submodules
+
+on:
+  schedule:
+    # run on the Tue of the second week (8th-14th) of every month, at 3:42AM
+    - cron: '42 3 8-14 * 2'
+  workflow_dispatch:
+
+jobs:
+  update-submodules:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update submodules
+        run: |
+          git submodule update --remote --recursive
+          git status --porcelain
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e  # v7.0.8
+        with:
+          commit-message: |
+            chore: update submodules
+
+            Update the git submodules to their latest remote commits.
+          title: 'chore: update submodules'
+          body: Update the git submodules to their latest remote commits.
+          branch: update-submodules
+          delete-branch: true
+          sign-commits: true
+          token: ${{ secrets.GITHUB_TOKEN }}
