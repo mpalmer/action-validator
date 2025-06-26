@@ -1,0 +1,39 @@
+name: Detect schema changes
+
+on:
+  schedule:
+    # run on the Tue of the second week (8th-14th) of every month, at 3:42AM
+    - cron: '42 3 8-14 * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update-submodules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update submodules
+        run: |
+          git submodule update --remote --recursive
+
+      - name: Detect changes
+        id: diff
+        run: |
+          changes="$(
+            git --no-pager diff --no-color --submodule=diff | {
+              grep -E '^diff .*/src/schemas/json/github-(workflow|action).json$' || true
+            }
+          )"
+
+          if [[ -n "$changes" ]]; then
+            echo "There are changes in submodules"
+            echo "$changes"
+            exit 1
+          fi
