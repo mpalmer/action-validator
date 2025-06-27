@@ -25,9 +25,7 @@
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },
-  "dependencies": {
-    "chalk": "5.2.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@action-validator/core": "file:../core"
   },
