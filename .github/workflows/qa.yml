@@ -52,7 +52,9 @@ jobs:
       - name: Shellcheck
         uses: ludeeus/action-shellcheck@master
         with:
-          ignore_paths: src/schemastore
+          ignore_names: >-
+            action-validator.bash
+            src/schemastore
 
       - name: Install shfmt
         uses: mfinelli/setup-shfmt@master

@@ -10,8 +10,8 @@ fn main() {
     let config = CliConfig::parse();
 
     if matches!(
-        action_validator::cli::run(&config),
-        action_validator::cli::RunResult::Failure
+        action_validator::cli_runtime::run(&config),
+        action_validator::cli_runtime::RunResult::Failure
     ) {
         process::exit(1);
     }
