@@ -54,6 +54,7 @@ jobs:
         with:
           ignore_names: >-
             action-validator.bash
+            src/schemastore
 
       - name: Install shfmt
         uses: mfinelli/setup-shfmt@master
@@ -78,7 +79,7 @@ jobs:
         rust-toolchain:
           - stable
           - nightly
-          - 1.74.1
+          - 1.84.0
         os:
           - ubuntu-latest
           - macos-latest
@@ -199,10 +200,10 @@ jobs:
           submodules: true
 
       - name: Install action-validator with asdf
-        uses: asdf-vm/actions/install@v3
+        uses: asdf-vm/actions/install@v4
         with:
           tool_versions: |
-            action-validator 0.5.1
+            action-validator 0.6.0
 
       - name: Lint Actions
         run: |

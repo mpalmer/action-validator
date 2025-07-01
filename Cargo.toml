@@ -14,7 +14,7 @@ version = "0.0.0-git"
 authors = ["Matt Palmer <matt@hezmatt.org>"]
 edition = "2021"
 # If this is changed, .github/workflows/qa.yml build matrix needs updating as well
-rust-version = "1.60.0"
+rust-version = "1.84.0"
 build = "build.rs"
 
 [lib]
@@ -29,8 +29,7 @@ glob = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9.17"
-# Install 4.x once published to crates.io
-valico = "4.0.0-rc.0"
+valico = "4.0"
 
 wasm-bindgen = "0.2.63"
 
