@@ -7,6 +7,7 @@ repository = "https://github.com/mpalmer/action-validator"
 include = [
 	"/LICENCE",
 	"/src/*.rs",
+	"/src/**/*.rs",
 	"/src/schemastore/src/schemas/json/github-workflow.json",
 	"/src/schemastore/src/schemas/json/github-action.json"
 ]
