@@ -7,6 +7,12 @@ The intended use case for `action-validator` is in Git pre-commit hooks and
 similar situations.
 
 
+# Funding Development
+
+I am currently experimenting with ways to fund development of new features in `action-validator`.
+You can find more details of this approach at [the `action-validator` code fund page](https://hezmatt.org/~mpalmer/code-fund.html).
+
+
 # Installation
 
 We have many ways to install `action-validator`.
