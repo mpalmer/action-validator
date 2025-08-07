@@ -107,10 +107,10 @@ This may seem a little redundant (after all, an action has to be valid in order 
 
 Update your .pre-commit-config.yaml:
 
-```
+```yaml
 repos:
 - repo: https://github.com/mpalmer/action-validator
-  rev: v0.5.1
+  rev: v0.7.1
   hooks:
     - id: action-validator
 ```
