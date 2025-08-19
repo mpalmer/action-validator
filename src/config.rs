@@ -13,6 +13,12 @@ pub struct CliConfig {
     #[arg(short, long)]
     pub verbose: bool,
 
+    #[arg(
+        long,
+        help = "Use specified dir as root of glob matching, rather than the current directory"
+    )]
+    pub rootdir: Option<PathBuf>,
+
     /// Input file
     #[arg(name = "path_to_action_yaml")]
     pub src: Vec<PathBuf>,
@@ -38,6 +44,7 @@ pub struct RunConfig<'a> {
     pub action_type: ActionType,
     pub src: &'a str,
     pub verbose: bool,
+    pub rootdir: Option<PathBuf>,
 }
 
 impl<'a> From<&JsConfig<'a>> for RunConfig<'a> {
@@ -48,6 +55,7 @@ impl<'a> From<&JsConfig<'a>> for RunConfig<'a> {
             action_type: config.action_type,
             src: config.src,
             verbose: config.verbose,
+            rootdir: None,
         }
     }
 }

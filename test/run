@@ -24,7 +24,9 @@ for t in [0-9]*; do
 
 	readarray -t -d '' testfiles < <(find "$t"/ -name '*.yml' -print0)
 
-	"$cmd" "${testfiles[@]}" >"$dir/stdout" 2>"$dir/stderr" || rv="$?"
+	EXTRA_ARGS="$(cat "$t/cli_args" 2>/dev/null || true)"
+
+	"$cmd" $EXTRA_ARGS "${testfiles[@]}" >"$dir/stdout" 2>"$dir/stderr" || rv="$?"
 	stdout="$(cat "$dir"/stdout)"
 	stderr="$(cat "$dir"/stderr)"
 

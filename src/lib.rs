@@ -6,6 +6,7 @@ mod validation_error;
 mod validation_state;
 
 use config::{ActionType, RunConfig};
+use std::path::PathBuf;
 use validation_error::ValidationError;
 use validation_state::ValidationState;
 
@@ -114,7 +115,10 @@ pub mod cli {
             let src = &match system::fs::read_to_string(path) {
                 Ok(src) => src,
                 Err(err) => {
-                    system::console::error(&format!("Unable to read file: {err}"));
+                    system::console::error(&format!(
+                        "Unable to read file {}: {err}",
+                        path.display()
+                    ));
                     success = false;
                     continue;
                 }
@@ -129,6 +133,7 @@ pub mod cli {
                 },
                 src,
                 verbose: config.verbose,
+                rootdir: config.rootdir.clone(),
             };
 
             let state = crate::run(&config);
@@ -174,7 +179,7 @@ fn run(config: &RunConfig) -> ValidationState {
                 // TODO: Re-enable path and job validation
                 let mut state = validate_as_workflow(&doc);
 
-                validate_paths(&doc, &mut state);
+                validate_paths(&doc, config.rootdir.as_ref(), &mut state);
                 validate_job_needs(&doc, &mut state);
 
                 state
@@ -188,27 +193,40 @@ fn run(config: &RunConfig) -> ValidationState {
     state
 }
 
-fn validate_paths(doc: &serde_json::Value, state: &mut ValidationState) {
-    validate_globs(&doc["on"]["push"]["paths"], "/on/push/paths", state);
+fn validate_paths(doc: &serde_json::Value, rootdir: Option<&PathBuf>, state: &mut ValidationState) {
+    validate_globs(
+        &doc["on"]["push"]["paths"],
+        "/on/push/paths",
+        rootdir,
+        state,
+    );
     validate_globs(
         &doc["on"]["push"]["paths-ignore"],
         "/on/push/paths-ignore",
+        rootdir,
         state,
     );
     validate_globs(
         &doc["on"]["pull_request"]["paths"],
         "/on/pull_request/paths",
+        rootdir,
         state,
     );
     validate_globs(
         &doc["on"]["pull_request"]["paths-ignore"],
         "/on/pull_request/paths-ignore",
+        rootdir,
         state,
     );
 }
 
 #[cfg(feature = "js")]
-fn validate_globs(value: &serde_json::Value, path: &str, _: &mut ValidationState) {
+fn validate_globs(
+    value: &serde_json::Value,
+    path: &str,
+    _rootdir: Option<&PathBuf>,
+    _: &mut ValidationState,
+) {
     if !value.is_null() {
         system::console::warn(&format!(
             "WARNING: Glob validation is not yet supported. Glob at {path} will not be validated."
@@ -217,7 +235,12 @@ fn validate_globs(value: &serde_json::Value, path: &str, _: &mut ValidationState
 }
 
 #[cfg(not(feature = "js"))]
-fn validate_globs(globs: &serde_json::Value, path: &str, state: &mut ValidationState) {
+fn validate_globs(
+    globs: &serde_json::Value,
+    path: &str,
+    rootdir: Option<&PathBuf>,
+    state: &mut ValidationState,
+) {
     if globs.is_null() {
         return;
     }
@@ -229,6 +252,12 @@ fn validate_globs(globs: &serde_json::Value, path: &str, state: &mut ValidationS
                 glob.chars().skip(1).collect()
             } else {
                 glob.to_string()
+            };
+
+            let pattern = if let Some(rootdir) = rootdir {
+                rootdir.join(pattern).display().to_string()
+            } else {
+                pattern
             };
 
             match glob::glob(&pattern) {

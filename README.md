@@ -90,13 +90,6 @@ action-validator .github/workflows/build.yml
 
 Use `action-validator -h` to see additional options.
 
-> ### CAUTION
->
-> As the intended use-case for `action-validator` is in pre-commit hooks,
-> it assumes that it is being run from the root of the repository. Glob
-> checking will explode horribly if you run it from a sub-directory of the
-> repo -- or, heaven forfend, outside the repository entirely.
-
 
 ## In a GitHub Action
 
