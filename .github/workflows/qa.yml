@@ -144,7 +144,7 @@ jobs:
 
       - name: Run Testsuite
         run: |
-          cargo +${{ steps.rust-install.outputs.name }} test
+          cargo +${{ steps.rust-install.outputs.name }} test -- --nocapture
 
   build-test-node:
     runs-on: ubuntu-latest

@@ -63,8 +63,8 @@ jobs:
         env:
           RUSTFLAGS: -D warnings
         run: |
-          cargo +${{ steps.rust-install.outputs.name }} test
-          cargo +${{ steps.rust-install.outputs.name }} test --all-features
+          cargo +${{ steps.rust-install.outputs.name }} test -- --nocapture
+          cargo +${{ steps.rust-install.outputs.name }} test --all-features -- --nocapture
 
       - name: Clippy
         run: |
