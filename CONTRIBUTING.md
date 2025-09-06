@@ -97,8 +97,26 @@ If you have made changes which will change the output of the program and cause s
 `cargo test -F test-save-snapshots`. This feature causes the executed command to save the `stdout`, `stderr`, and/or
 exit code to the specified testing directory.
 
-If you are writing a net new test, you will need to create the test directory with your workflow or action file.
-Once you're done, you can save the results to that directy by running `cargo test -F test-save-snapshots`.
+If you are writing a net new test, you will need to create the test directory with your workflow or action file, and a
+`test.json` file. Once you're done, you can save the results to that directy by running
+`cargo test -F test-save-snapshots`.
+
+The `test.json` file contains the test configuration. It can usually be left empty (i.e. `{}`).
+
+```jsonc
+// Example test.json
+{
+  "targets": {
+    "node": false,
+    "native": true
+  },
+  "cli_args": [
+    "--rootdir",
+    "tests/fixtures/011_subdir_globs/subdir",
+    "tests/fixtures/011_subdir_globs/subdir/glob.yml"
+  ]
+}
+```
 
 # Testing Node/WASM Bindings
 
