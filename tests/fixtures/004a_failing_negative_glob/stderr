@@ -3,7 +3,7 @@ Validation failed: ValidationState {
         Workflow,
     ),
     file_path: Some(
-        "tests/fixtures/004a_failing_negative_glob/glob.yml",
+        "{{repo}}/tests/fixtures/004a_failing_negative_glob/glob.yml",
     ),
     errors: [
         NoFilesMatchingGlob {

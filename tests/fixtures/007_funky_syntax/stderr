@@ -3,7 +3,7 @@ Validation failed: ValidationState {
         Workflow,
     ),
     file_path: Some(
-        "tests/fixtures/007_funky_syntax/rust-check.yml",
+        "{{repo}}/tests/fixtures/007_funky_syntax/rust-check.yml",
     ),
     errors: [
         Parse {

@@ -1,1 +1,1 @@
-Fatal error validating tests/fixtures/007_funky_syntax/rust-check.yml
+Fatal error validating {{repo}}/tests/fixtures/007_funky_syntax/rust-check.yml

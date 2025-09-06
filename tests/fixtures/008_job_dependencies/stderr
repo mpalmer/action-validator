@@ -3,7 +3,7 @@ Validation failed: ValidationState {
         Workflow,
     ),
     file_path: Some(
-        "tests/fixtures/008_job_dependencies/test.yml",
+        "{{repo}}/tests/fixtures/008_job_dependencies/test.yml",
     ),
     errors: [
         UnresolvedJob {

@@ -7,6 +7,12 @@ The intended use case for `action-validator` is in Git pre-commit hooks and
 similar situations.
 
 
+# Funding Development
+
+I am currently experimenting with ways to fund development of new features in `action-validator`.
+You can find more details of this approach at [the `action-validator` code fund page](https://hezmatt.org/~mpalmer/code-fund.html).
+
+
 # Installation
 
 We have many ways to install `action-validator`.
@@ -84,13 +90,6 @@ action-validator .github/workflows/build.yml
 
 Use `action-validator -h` to see additional options.
 
-> ### CAUTION
->
-> As the intended use-case for `action-validator` is in pre-commit hooks,
-> it assumes that it is being run from the root of the repository. Glob
-> checking will explode horribly if you run it from a sub-directory of the
-> repo -- or, heaven forfend, outside the repository entirely.
-
 
 ## In a GitHub Action
 
@@ -101,10 +100,10 @@ This may seem a little redundant (after all, an action has to be valid in order 
 
 Update your .pre-commit-config.yaml:
 
-```
+```yaml
 repos:
 - repo: https://github.com/mpalmer/action-validator
-  rev: v0.5.1
+  rev: v<version>
   hooks:
     - id: action-validator
 ```

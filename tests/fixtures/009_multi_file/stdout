@@ -1,1 +1,1 @@
-Fatal error validating tests/fixtures/009_multi_file/xinvalid.yml
+Fatal error validating {{repo}}/tests/fixtures/009_multi_file/xinvalid.yml

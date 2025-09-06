@@ -1,35 +1,72 @@
+use std::env::current_dir;
+use std::fs::File;
+use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::{ffi::OsStr, fs};
 
 use assert_cmd::Command;
 use fixtures::fixtures;
 
+static REPO_DIR_WILDCARD: &str = "{{repo}}";
+
+#[derive(Debug, serde::Deserialize)]
+struct SnapshotTestConfig {
+    cli_args: Option<Vec<String>>,
+}
+
 #[derive(Debug)]
 struct SnapshotTest {
+    config: SnapshotTestConfig,
+    current_dir: PathBuf,
     test_dir: PathBuf,
-    workflow_files: Vec<PathBuf>,
 }
 
 impl SnapshotTest {
     fn new(test_dir: &Path) -> Self {
-        let workflow_files = fs::read_dir(test_dir)
-            .unwrap()
-            .filter_map(Result::ok)
-            .filter(|f| f.path().extension() == Some(OsStr::new("yml")))
-            .map(|f| f.path().to_path_buf())
-            .collect();
+        let test_config_file = test_dir.join("test.json");
+
+        let config: SnapshotTestConfig = serde_json::from_reader(BufReader::new(
+            File::open(&test_config_file).expect(&format!(
+                "missing test conifg file ({})",
+                test_config_file.to_string_lossy(),
+            )),
+        ))
+        .expect(&format!(
+            "invalid test config file ({})",
+            test_config_file.to_string_lossy(),
+        ));
 
         SnapshotTest {
+            config,
+            current_dir: current_dir().unwrap(),
             test_dir: test_dir.to_path_buf(),
-            workflow_files,
         }
     }
 
-    #[cfg(not(feature = "test-save-snapshots"))]
-    fn execute(self) {
-        let stderr = fs::read_to_string(self.test_dir.join("stderr")).unwrap_or(String::from(""));
+    fn build_command(&self) -> Command {
+        #[cfg(not(feature = "test-js"))]
+        {
+            Command::cargo_bin(env!("CARGO_PKG_NAME")).expect("binary to execute")
+        }
 
-        let stdout = fs::read_to_string(self.test_dir.join("stdout")).unwrap_or(String::from(""));
+        #[cfg(feature = "test-js")]
+        {
+            Command::new("npx").arg("action-validator")
+        }
+    }
+
+    fn execute(self) {
+        use std::ffi::OsString;
+
+        let pwd = self.current_dir.to_str().unwrap();
+
+        let stderr = fs::read_to_string(self.test_dir.join("stderr"))
+            .unwrap_or(String::from(""))
+            .replace(REPO_DIR_WILDCARD, pwd);
+
+        let stdout = fs::read_to_string(self.test_dir.join("stdout"))
+            .unwrap_or(String::from(""))
+            .replace(REPO_DIR_WILDCARD, pwd);
 
         let exitcode: i32 = fs::read_to_string(self.test_dir.join("exitcode"))
             .map(|s| {
@@ -40,60 +77,73 @@ impl SnapshotTest {
             })
             .unwrap_or(0);
 
-        #[cfg(not(feature = "test-js"))]
-        Command::cargo_bin(env!("CARGO_PKG_NAME"))
-            .expect("binary to execute")
-            .args(self.workflow_files)
+        let cli_args: Vec<_> = if let Some(cli_args) = &self.config.cli_args {
+            cli_args.iter().map(OsString::from).collect()
+        } else {
+            fs::read_dir(&self.test_dir)
+                .unwrap()
+                .filter_map(Result::ok)
+                .filter(|f| f.path().extension() == Some(OsStr::new("yml")))
+                .map(|f| f.path().into_os_string())
+                .collect()
+        };
+
+        #[cfg(not(feature = "test-save-snapshots"))]
+        self.build_command()
+            .args(&cli_args)
             .assert()
             .stdout(stdout)
             .stderr(stderr)
             .code(exitcode);
 
-        #[cfg(feature = "test-js")]
-        Command::new("npx")
-            .arg("action-validator")
-            .args(self.workflow_files)
-            .assert()
-            .stdout(stdout)
-            .stderr(stderr)
-            .code(exitcode);
-    }
+        #[cfg(feature = "test-save-snapshots")]
+        {
+            use std::io::prelude::*;
 
-    #[cfg(feature = "test-save-snapshots")]
-    fn execute(&self) {
-        use std::fs::File;
-        use std::io::prelude::*;
+            let result = self
+                .build_command()
+                .args(&cli_args)
+                .ok()
+                .unwrap_or_else(|e| e.as_output().unwrap().to_owned());
 
-        let result = Command::cargo_bin(env!("CARGO_PKG_NAME"))
-            .expect("binary to execute")
-            .args(&self.workflow_files)
-            .ok()
-            .unwrap_or_else(|e| e.as_output().unwrap().to_owned());
-
-        if !result.stdout.is_empty() {
-            File::create(self.test_dir.join("stdout"))
-                .unwrap()
-                .write_all(&result.stdout)
-                .unwrap();
-        }
-        if !result.stderr.is_empty() {
-            File::create(self.test_dir.join("stderr"))
-                .unwrap()
-                .write_all(&result.stderr)
-                .unwrap();
-        }
-        if let Some(exitcode) = result.status.code() {
-            if exitcode > 0 {
-                File::create(self.test_dir.join("exitcode"))
+            if !result.stdout.is_empty() {
+                File::create(self.test_dir.join("stdout"))
                     .unwrap()
-                    .write_all(exitcode.to_string().as_bytes())
+                    .write_all(
+                        String::from_utf8(result.stdout)
+                            .unwrap()
+                            .replace(pwd, REPO_DIR_WILDCARD)
+                            .as_bytes(),
+                    )
                     .unwrap();
+            }
+            if !result.stderr.is_empty() {
+                File::create(self.test_dir.join("stderr"))
+                    .unwrap()
+                    .write_all(
+                        String::from_utf8(result.stderr)
+                            .unwrap()
+                            .replace(pwd, REPO_DIR_WILDCARD)
+                            .as_bytes(),
+                    )
+                    .unwrap();
+            }
+            if let Some(exitcode) = result.status.code() {
+                if exitcode > 0 {
+                    File::create(self.test_dir.join("exitcode"))
+                        .unwrap()
+                        .write_all(exitcode.to_string().as_bytes())
+                        .unwrap();
+                }
             }
         }
     }
+
+    #[cfg(feature = "test-save-snapshots")]
+    fn execute(&self) {}
 }
 
-#[fixtures("tests/fixtures/*")]
+#[fixtures(["tests/fixtures/*"])]
 fn snapshot(dir: &Path) {
     SnapshotTest::new(dir).execute();
 }

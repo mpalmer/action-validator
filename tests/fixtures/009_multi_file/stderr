@@ -3,7 +3,7 @@ Validation failed: ValidationState {
         Workflow,
     ),
     file_path: Some(
-        "tests/fixtures/009_multi_file/xinvalid.yml",
+        "{{repo}}/tests/fixtures/009_multi_file/xinvalid.yml",
     ),
     errors: [
         Parse {
