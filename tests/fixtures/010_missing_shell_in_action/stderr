@@ -1,0 +1,108 @@
+Validation failed: ValidationState {
+    action_type: Some(
+        Action,
+    ),
+    file_path: Some(
+        "{{repo}}/tests/fixtures/010_missing_shell_in_action/action.yml",
+    ),
+    errors: [
+        OneOf {
+            code: "one_of",
+            detail: None,
+            path: "/runs",
+            title: "OneOf conditions are not met",
+            states: [
+                ValidationState {
+                    action_type: None,
+                    file_path: None,
+                    errors: [
+                        Properties {
+                            code: "properties",
+                            detail: Some(
+                                "Additional property 'steps' is not allowed",
+                            ),
+                            path: "/runs",
+                            title: "Property conditions are not met",
+                        },
+                        Enum {
+                            code: "enum",
+                            detail: None,
+                            path: "/runs/using",
+                            title: "Enum conditions are not met",
+                        },
+                        Required {
+                            code: "required",
+                            detail: None,
+                            path: "/runs/main",
+                            title: "This property is required",
+                        },
+                    ],
+                },
+                ValidationState {
+                    action_type: None,
+                    file_path: None,
+                    errors: [
+                        OneOf {
+                            code: "one_of",
+                            detail: None,
+                            path: "/runs/steps/0",
+                            title: "OneOf conditions are not met",
+                            states: [
+                                ValidationState {
+                                    action_type: None,
+                                    file_path: None,
+                                    errors: [
+                                        Required {
+                                            code: "required",
+                                            detail: None,
+                                            path: "/runs/steps/0/shell",
+                                            title: "This property is required",
+                                        },
+                                    ],
+                                },
+                                ValidationState {
+                                    action_type: None,
+                                    file_path: None,
+                                    errors: [
+                                        Required {
+                                            code: "required",
+                                            detail: None,
+                                            path: "/runs/steps/0/uses",
+                                            title: "This property is required",
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                },
+                ValidationState {
+                    action_type: None,
+                    file_path: None,
+                    errors: [
+                        Properties {
+                            code: "properties",
+                            detail: Some(
+                                "Additional property 'steps' is not allowed",
+                            ),
+                            path: "/runs",
+                            title: "Property conditions are not met",
+                        },
+                        Const {
+                            code: "const",
+                            detail: None,
+                            path: "/runs/using",
+                            title: "Const condition is not met",
+                        },
+                        Required {
+                            code: "required",
+                            detail: None,
+                            path: "/runs/image",
+                            title: "This property is required",
+                        },
+                    ],
+                },
+            ],
+        },
+    ],
+}

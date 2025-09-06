@@ -3,10 +3,12 @@
   "private": true,
   "version": "0.0.0-git",
   "license": "GPL-3.0-only",
+  "workspaces": ["packages/*"],
   "scripts": {
     "build": "./scripts/build-wasm.sh",
-    "build:dev": "./scripts/build-wasm.sh",
-    "test": "node test/run.mjs",
+    "build:dev": "WASM_PACK_BUILD_FLAGS='--no-opt' ./scripts/build-wasm.sh",
+    "test": "./scripts/test-wasm.sh",
+    "test:dev": "WASM_PACK_BUILD_FLAGS='--no-opt' ./scripts/test-wasm.sh",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },
