@@ -10,8 +10,33 @@ use fixtures::fixtures;
 static REPO_DIR_WILDCARD: &str = "{{repo}}";
 
 #[derive(Debug, serde::Deserialize)]
+struct Targets {
+    #[cfg(not(feature = "test-js"))]
+    #[serde(default = "default_target_enabled")]
+    native: bool,
+    #[cfg(feature = "test-js")]
+    #[serde(default = "default_target_enabled")]
+    node: bool,
+}
+
+fn default_target_enabled() -> bool {
+    true
+}
+
+#[derive(Debug, serde::Deserialize)]
 struct SnapshotTestConfig {
+    #[serde(default = "default_targets_config")]
+    targets: Targets,
     cli_args: Option<Vec<String>>,
+}
+
+fn default_targets_config() -> Targets {
+    Targets {
+        #[cfg(not(feature = "test-js"))]
+        native: true,
+        #[cfg(feature = "test-js")]
+        node: true,
+    }
 }
 
 #[derive(Debug)]
@@ -51,12 +76,27 @@ impl SnapshotTest {
 
         #[cfg(feature = "test-js")]
         {
-            Command::new("npx").arg("action-validator")
+            let mut cmd = Command::new("npx");
+            cmd.arg("@action-validator/cli");
+            cmd
         }
     }
 
     fn execute(self) {
         use std::ffi::OsString;
+
+        #[cfg(not(feature = "test-js"))]
+        let skip = self.config.targets.native == false;
+        #[cfg(feature = "test-js")]
+        let skip = self.config.targets.node == false;
+
+        if skip {
+            eprintln!(
+                "test snapshot_{} ... skipped",
+                self.test_dir.file_name().unwrap().to_str().unwrap()
+            );
+            return;
+        }
 
         let pwd = self.current_dir.to_str().unwrap();
 
