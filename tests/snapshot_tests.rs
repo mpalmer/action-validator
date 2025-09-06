@@ -100,23 +100,6 @@ impl SnapshotTest {
 
         let pwd = self.current_dir.to_str().unwrap();
 
-        let stderr = fs::read_to_string(self.test_dir.join("stderr"))
-            .unwrap_or(String::from(""))
-            .replace(REPO_DIR_WILDCARD, pwd);
-
-        let stdout = fs::read_to_string(self.test_dir.join("stdout"))
-            .unwrap_or(String::from(""))
-            .replace(REPO_DIR_WILDCARD, pwd);
-
-        let exitcode: i32 = fs::read_to_string(self.test_dir.join("exitcode"))
-            .map(|s| {
-                s.strip_suffix("\n")
-                    .unwrap_or(s.as_str())
-                    .parse::<i32>()
-                    .unwrap_or(0)
-            })
-            .unwrap_or(0);
-
         let cli_args: Vec<_> = if let Some(cli_args) = &self.config.cli_args {
             cli_args.iter().map(OsString::from).collect()
         } else {
@@ -129,12 +112,31 @@ impl SnapshotTest {
         };
 
         #[cfg(not(feature = "test-save-snapshots"))]
-        self.build_command()
-            .args(&cli_args)
-            .assert()
-            .stdout(stdout)
-            .stderr(stderr)
-            .code(exitcode);
+        {
+            let stderr = fs::read_to_string(self.test_dir.join("stderr"))
+                .unwrap_or(String::from(""))
+                .replace(REPO_DIR_WILDCARD, pwd);
+
+            let stdout = fs::read_to_string(self.test_dir.join("stdout"))
+                .unwrap_or(String::from(""))
+                .replace(REPO_DIR_WILDCARD, pwd);
+
+            let exitcode: i32 = fs::read_to_string(self.test_dir.join("exitcode"))
+                .map(|s| {
+                    s.strip_suffix("\n")
+                        .unwrap_or(s.as_str())
+                        .parse::<i32>()
+                        .unwrap_or(0)
+                })
+                .unwrap_or(0);
+
+            self.build_command()
+                .args(&cli_args)
+                .assert()
+                .stdout(stdout)
+                .stderr(stderr)
+                .code(exitcode);
+        }
 
         #[cfg(feature = "test-save-snapshots")]
         {
@@ -178,9 +180,6 @@ impl SnapshotTest {
             }
         }
     }
-
-    #[cfg(feature = "test-save-snapshots")]
-    fn execute(&self) {}
 }
 
 #[fixtures(["tests/fixtures/*"])]
