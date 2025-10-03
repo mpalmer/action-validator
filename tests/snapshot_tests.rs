@@ -183,6 +183,7 @@ impl SnapshotTest {
 }
 
 #[fixtures(["tests/fixtures/*"])]
+#[test]
 fn snapshot(dir: &Path) {
     SnapshotTest::new(dir).execute();
 }
