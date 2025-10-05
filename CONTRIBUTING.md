@@ -90,7 +90,7 @@ follow the directions in [this guide](https://doc.rust-lang.org/book/ch11-01-wri
 
 ## Snapshot Tests
 A snapshot test is performed when we execute the cli and capture `stdout`, `stderr`, and/or an exit code.
-When the tests is run, the results of the test must exactly match those of the previous run. For this project,
+When the tests are run, the results of the test must exactly match those of the previous run. For this project,
 the snapshot tests are named in the format `{next_id}_{whats_being_tested}` (e.g. `011_remote_checks_failure`).
 
 If you have made changes which will change the output of the program and cause snapshots to fail, you can run
