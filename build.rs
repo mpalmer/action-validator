@@ -1,3 +1,3 @@
 fn main() {
-    fixtures::build::watch_dir("tests/fixtures");
+    println!("cargo:rerun-if-changed=tests/fixtures");
 }
