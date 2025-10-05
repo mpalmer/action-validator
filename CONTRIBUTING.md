@@ -121,5 +121,5 @@ The `test.json` file contains the test configuration. It can usually be left emp
 # Testing Node/WASM Bindings
 
 To test against the Node/WASM bindings, you can run `npm test`, or `npm test:dev` (to skip optimisations).
-Note that Node support is considered experiemental, and does not have one to one feature parity with the native binary yet.
+Note that Node support is considered experimental, and does not have one to one feature parity with the native binary yet.
 As such, some tests may fail, even on `main`.
