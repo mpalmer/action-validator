@@ -145,6 +145,25 @@ impl SnapshotTest {
 }
 
 #[fixtures(["tests/fixtures/*"])]
+#[cfg_attr(
+    feature = "test-js",
+    fixtures::ignore(
+        paths = "tests/fixtures/003_successful_globs",
+        reason = "Glob support is not implemented for JS targets yet."
+    ),
+    fixtures::ignore(
+        paths = "tests/fixtures/004_failing_globs",
+        reason = "Glob support is not implemented for JS targets yet."
+    ),
+    fixtures::ignore(
+        paths = "tests/fixtures/004a_failing_negative_glob",
+        reason = "Glob support is not implemented for JS targets yet."
+    ),
+    fixtures::ignore(
+        paths = "tests/fixtures/011_subdir_globs",
+        reason = "Glob support is not implemented for JS targets yet."
+    )
+)]
 #[test]
 fn snapshot(dir: &Path) {
     SnapshotTest::new(dir).execute();
