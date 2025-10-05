@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-cargo test -F test-js -- --nocapture
+cargo test -F test-js
