@@ -41,7 +41,7 @@ Submodule path 'src/schemastore': checked out 'd3e6ab7727380b214acbab05570fb09a3
 At this point, you should be all set to `cargo run`!
 
 ## Node/WASM Setup
-If you plan to work on the WASM/Node bindings, you'll also need to install Node. We recommend using a [NVM](https://github.com/nvm-sh/nvm) to install the Node version listed in `.nvmrc`.
+If you plan to work on the WASM/Node bindings, you'll also need to install Node. We recommend using [NVM](https://github.com/nvm-sh/nvm) to install the Node version listed in `.nvmrc`.
 
 Once Node is installed, run `npm install` at the root of the repository.
 
