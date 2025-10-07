@@ -58,7 +58,7 @@ jobs:
         uses: mfinelli/setup-shfmt@master
 
       - name: Run shfmt
-        run: shfmt -d bin/* test/run
+        run: shfmt -d bin/*
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -142,13 +142,9 @@ jobs:
         with:
           toolchain: ${{ matrix.rust-toolchain }}
 
-      - name: Build
-        run: |
-          cargo +${{ steps.rust-install.outputs.name }} build
-
       - name: Run Testsuite
-        working-directory: "test"
-        run: ./run
+        run: |
+          cargo +${{ steps.rust-install.outputs.name }} test
 
   build-test-node:
     runs-on: ubuntu-latest

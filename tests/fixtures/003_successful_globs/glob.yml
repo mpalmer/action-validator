@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  push:
+    paths:
+      - tests/fixtures/003_successful_globs/*
+      - '!tests/fixtures/003_successful_globs/*.json'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  glob:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup
+        uses: something/setup@v1
+
+      - name: Build
+        uses: something/build@v1

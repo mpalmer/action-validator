@@ -1,0 +1,3 @@
+{
+  "cli_args": ["--rootdir", "tests/fixtures/011_subdir_globs/subdir", "tests/fixtures/011_subdir_globs/subdir/glob.yml"]
+}

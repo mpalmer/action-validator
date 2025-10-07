@@ -1,0 +1,18 @@
+Validation failed: ValidationState {
+    action_type: Some(
+        Workflow,
+    ),
+    file_path: Some(
+        "{{repo}}/tests/fixtures/004a_failing_negative_glob/glob.yml",
+    ),
+    errors: [
+        NoFilesMatchingGlob {
+            code: "glob_not_matched",
+            detail: Some(
+                "Glob \"!tests/fixtures/004a_failing_negative_glob/*.txt\" in /on/push/paths does not match any files",
+            ),
+            path: "/on/push/paths",
+            title: "Glob does not match any files",
+        },
+    ],
+}
