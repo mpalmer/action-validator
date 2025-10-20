@@ -88,10 +88,6 @@ jobs:
         run: |
           cargo +${{ steps.rust-install.outputs.name }} update
 
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
-
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
