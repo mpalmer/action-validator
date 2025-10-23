@@ -148,20 +148,8 @@ impl SnapshotTest {
 #[cfg_attr(
     feature = "test-js",
     fixtures::ignore(
-        paths = "tests/fixtures/003_successful_globs",
-        reason = "Glob support is not implemented for JS targets yet."
-    ),
-    fixtures::ignore(
-        paths = "tests/fixtures/004_failing_globs",
-        reason = "Glob support is not implemented for JS targets yet."
-    ),
-    fixtures::ignore(
-        paths = "tests/fixtures/004a_failing_negative_glob",
-        reason = "Glob support is not implemented for JS targets yet."
-    ),
-    fixtures::ignore(
-        paths = "tests/fixtures/011_subdir_globs",
-        reason = "Glob support is not implemented for JS targets yet."
+        paths = "tests/fixtures/013_rejects_gitignore_extended_glob_syntax",
+        reason = "The WASM implementation of action validator currently (incorrectly) accepts extended gitignore syntax"
     )
 )]
 #[test]
