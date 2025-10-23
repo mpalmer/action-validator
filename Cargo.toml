@@ -49,7 +49,7 @@ assert_cmd = { version = "2.0.8", optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
-fixtures = "2.4.0"
+fixtures = "2.5.0"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
