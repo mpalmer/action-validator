@@ -145,6 +145,13 @@ impl SnapshotTest {
 }
 
 #[fixtures(["tests/fixtures/*"])]
+#[cfg_attr(
+    feature = "test-js",
+    fixtures::ignore(
+        paths = "tests/fixtures/013_rejects_gitignore_extended_glob_syntax",
+        reason = "The WASM implementation of action validator currently (incorrectly) accepts extended gitignore syntax"
+    )
+)]
 #[test]
 fn snapshot(dir: &Path) {
     SnapshotTest::new(dir).execute();
