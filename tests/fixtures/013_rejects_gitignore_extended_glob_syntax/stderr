@@ -1,0 +1,18 @@
+Validation failed: ValidationState {
+    action_type: Some(
+        Workflow,
+    ),
+    file_path: Some(
+        "{{repo}}/tests/fixtures/013_rejects_gitignore_extended_glob_syntax/glob.yml",
+    ),
+    errors: [
+        NoFilesMatchingGlob {
+            code: "glob_not_matched",
+            detail: Some(
+                "Glob \"tests/fixtures/013_rejects_gitignore_extended_glob_syntax/subdir/asset.{js,jsx}\" in /on/push/paths does not match any files",
+            ),
+            path: "/on/push/paths",
+            title: "Glob does not match any files",
+        },
+    ],
+}
