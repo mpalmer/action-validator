@@ -40,7 +40,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ inputs.destination }}/action-validator
-        key: action-validator-${{ inputs.version }}
+        key: action-validator_v${{ inputs.version }}_${{ steps.os.outputs.os }}_${{ steps.arch.outputs.arch }}
     - if: steps.cache.outputs.cache-hit != 'true'
       name: Install
       shell: sh
