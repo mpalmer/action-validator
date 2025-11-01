@@ -45,10 +45,14 @@ runs:
       name: Install
       shell: sh
       env:
-        bin: https://github.com/mpalmer/action-validator/releases/download/v${{ inputs.version }}/action-validator_linux_amd64
+        GH_TOKEN: ${{ github.token }}
+        version: ${{ inputs.version }}
+        os: ${{ steps.os.outputs.os }}
+        arch: ${{ steps.arch.outputs.arch }}
         dest: ${{ inputs.destination }}/action-validator
       run: |
-        curl -sSL "$bin" -o "$dest"
+        echo "gh release download \"v$version\" --repo mpalmer/action-validator --pattern \"action-validator_${os}_$arch\" --output \"$dest\""
+        gh release download "v$version" --repo mpalmer/action-validator --pattern "action-validator_${os}_$arch" --output "$dest"
         chmod +x "$dest"
     - name: Run
       shell: sh
