@@ -9,6 +9,17 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Convert architecture
+      id: arch
+      shell: sh
+      env:
+        runner_arch: ${{ runner.arch }} # Possible values are X86, X64, ARM, or ARM64.
+      run: |
+        case "$runner_arch" in
+          X64) echo "arch=amd64" >> "$GITHUB_OUTPUT" ;;
+          ARM64) echo "arch=arm64" >> "$GITHUB_OUTPUT" ;;
+          *) echo "Unsupported architecture: $runner_arch" >&2; exit 1 ;;
+        esac
     - name: Cache
       id: cache
       uses: actions/cache@v4
