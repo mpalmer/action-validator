@@ -53,4 +53,4 @@ runs:
     - name: Run
       shell: sh
       run: |
-        git ls-files -z ".github/*/*.yml" "*/action.yml" | xargs -0 action-validator --verbose
+        git ls-files -z ".github/workflows/*.yml" "*/action.yml" | xargs -0 action-validator --verbose
