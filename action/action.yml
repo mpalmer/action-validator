@@ -49,11 +49,11 @@ runs:
         version: ${{ inputs.version }}
         os: ${{ steps.os.outputs.os }}
         arch: ${{ steps.arch.outputs.arch }}
-        dest: ${{ inputs.destination }}/action-validator
+        output: ${{ inputs.destination }}/action-validator
       run: |
-        echo "gh release download \"v$version\" --repo mpalmer/action-validator --pattern \"action-validator_${os}_$arch\" --output \"$dest\""
-        gh release download "v$version" --repo mpalmer/action-validator --pattern "action-validator_${os}_$arch" --output "$dest"
-        chmod +x "$dest"
+        echo "gh release download \"v$version\" --repo mpalmer/action-validator --pattern \"action-validator_${os}_$arch\" --output \"$output\""
+        gh release download "v$version" --repo mpalmer/action-validator --pattern "action-validator_${os}_$arch" --output "$output"
+        chmod +x "$output"
     - name: Run
       shell: sh
       run: |
