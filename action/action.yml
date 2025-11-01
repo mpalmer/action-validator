@@ -1,12 +1,12 @@
 name: action-validator
-description: Runs action-validator with verbose output on files tracked by Git.
+description: Downloads, caches, and runs action-validator with verbose output on files tracked by Git.
 inputs:
   version:
-    description: action-validator version to install
+    description: action-validator version in semver format without the 'v' prefix
     required: false
     default: "0.8.0"
   destination:
-    description: Installation destination directory
+    description: Installation destination without trailing slash for the binary
     required: false
     default: /usr/local/bin
 
