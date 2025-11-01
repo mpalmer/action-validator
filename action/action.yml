@@ -1,0 +1,30 @@
+name: action-validator
+description: Runs action-validator with verbose output on files tracked by Git.
+inputs:
+  version:
+    description: action-validator version to install
+    required: false
+    default: 0.6.0
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: /usr/local/bin/action-validator
+        key: action-validator-${{ inputs.version }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install
+      shell: sh
+      env:
+        bin: https://github.com/mpalmer/action-validator/releases/download/v${{ inputs.version }}/action-validator_linux_amd64
+        dest: /usr/local/bin/action-validator
+      run: |
+        curl -sSL "$bin" -o "$dest"
+        chmod +x "$dest"
+    - name: Run
+      shell: sh
+      run: |
+        git ls-files -z ".github/*/*.yml" "*/action.yml" | xargs -0 action-validator --verbose
