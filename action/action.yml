@@ -4,7 +4,7 @@ inputs:
   version:
     description: action-validator version to install
     required: false
-    default: 0.6.0
+    default: "0.8.0"
 
 runs:
   using: "composite"
