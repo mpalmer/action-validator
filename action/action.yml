@@ -20,6 +20,17 @@ runs:
           ARM64) echo "arch=arm64" >> "$GITHUB_OUTPUT" ;;
           *) echo "Unsupported architecture: $runner_arch" >&2; exit 1 ;;
         esac
+    - name: Convert OS
+      id: os
+      shell: sh
+      env:
+        runner_os: ${{ runner.os }} # Possible values are Linux, Windows, or macOS.
+      run: |
+        case "$runner_os" in
+          Linux) echo "os=linux" >> "$GITHUB_OUTPUT" ;;
+          macOS) echo "os=darwin" >> "$GITHUB_OUTPUT" ;;
+          *) echo "Unsupported OS: $runner_os" >&2; exit 1 ;;
+        esac
     - name: Cache
       id: cache
       uses: actions/cache@v4
