@@ -50,8 +50,8 @@ impl SnapshotTest {
 
         #[cfg(feature = "test-js")]
         {
-            let mut cmd = Command::new("npx");
-            cmd.arg("@action-validator/cli");
+            let mut cmd = Command::new("node");
+            cmd.arg("packages/cli/cli.mjs");
             cmd
         }
     }
