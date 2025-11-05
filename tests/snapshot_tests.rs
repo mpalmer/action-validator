@@ -1,11 +1,10 @@
+use fixtures::fixtures;
 use std::env::current_dir;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::{ffi::OsStr, fs};
-
-use fixtures::fixtures;
 
 static REPO_DIR_WILDCARD: &str = "{{repo}}";
 
@@ -104,6 +103,7 @@ impl SnapshotTest {
 
         #[cfg(feature = "test-save-snapshots")]
         {
+            use assert_cmd::output::OutputOkExt as _;
             use std::io::prelude::*;
 
             let result = self
