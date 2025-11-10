@@ -1,11 +1,10 @@
+use fixtures::fixtures;
 use std::env::current_dir;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::{ffi::OsStr, fs};
-
-use assert_cmd::Command;
-use fixtures::fixtures;
 
 static REPO_DIR_WILDCARD: &str = "{{repo}}";
 
@@ -46,13 +45,13 @@ impl SnapshotTest {
     fn build_command(&self) -> Command {
         #[cfg(not(feature = "test-js"))]
         {
-            Command::cargo_bin(env!("CARGO_PKG_NAME")).expect("binary to execute")
+            Command::new(assert_cmd::cargo::cargo_bin!())
         }
 
         #[cfg(feature = "test-js")]
         {
-            let mut cmd = Command::new("npx");
-            cmd.arg("@action-validator/cli");
+            let mut cmd = Command::new("node");
+            cmd.arg("packages/cli/cli.mjs");
             cmd
         }
     }
@@ -75,6 +74,8 @@ impl SnapshotTest {
 
         #[cfg(not(feature = "test-save-snapshots"))]
         {
+            use assert_cmd::assert::OutputAssertExt as _;
+
             let stderr = fs::read_to_string(self.test_dir.join("stderr"))
                 .unwrap_or(String::from(""))
                 .replace(REPO_DIR_WILDCARD, pwd);
@@ -102,6 +103,7 @@ impl SnapshotTest {
 
         #[cfg(feature = "test-save-snapshots")]
         {
+            use assert_cmd::output::OutputOkExt as _;
             use std::io::prelude::*;
 
             let result = self
