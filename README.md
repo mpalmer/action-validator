@@ -57,6 +57,30 @@ asdf set -u action-validator latest
 action-validator --help
 ```
 
+
+# Using mise
+
+If you are a passionate user of [mise](https://github.com/jdx/mise), then you can use that to install and manage `action-validator`:
+
+No need to declare the plugin, it's already known by mise.
+
+Install/configure action-validator:
+
+```shell
+# Show all installable versions
+mise ls-remote action-validator
+
+# Install specific version
+mise install action-validator@latest
+
+# Set a version globally (on your ~/.tool-versions or .mise.toml file)
+mise use -g action-validator@latest
+
+# Now action-validator commands are available
+action-validator --help
+```
+
+
 ## Using NPM
 
 Node users can install the latest version using NPM:
