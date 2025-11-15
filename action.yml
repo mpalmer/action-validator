@@ -9,7 +9,9 @@ inputs:
     description: Installation path without trailing slash for the binary
     required: false
     default: /usr/local/bin
-
+branding:
+  icon: check
+  color: green
 runs:
   using: "composite"
   steps:
