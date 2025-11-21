@@ -5,10 +5,6 @@ inputs:
     description: action-validator version in semver format without the 'v' prefix
     required: false
     default: "0.8.0"
-  install-path:
-    description: Installation path without trailing slash for the binary
-    required: false
-    default: /usr/local/bin
 branding:
   icon: check
   color: green
@@ -41,7 +37,7 @@ runs:
       id: cache
       uses: actions/cache@v4
       with:
-        path: ${{ inputs.install-path }}/action-validator
+        path: /usr/local/bin/action-validator
         key: action-validator_v${{ inputs.version }}_${{ steps.os.outputs.os }}_${{ steps.arch.outputs.arch }}
     - if: steps.cache.outputs.cache-hit != 'true'
       name: Install
@@ -51,7 +47,7 @@ runs:
         version: ${{ inputs.version }}
         os: ${{ steps.os.outputs.os }}
         arch: ${{ steps.arch.outputs.arch }}
-        output: ${{ inputs.install-path }}/action-validator
+        output: /usr/local/bin/action-validator
       run: |
         echo "gh release download \"v$version\" --repo mpalmer/action-validator --pattern \"action-validator_${os}_$arch\" --output \"$output\""
         gh release download "v$version" --repo mpalmer/action-validator --pattern "action-validator_${os}_$arch" --output "$output"
