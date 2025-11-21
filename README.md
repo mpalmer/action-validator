@@ -125,6 +125,8 @@ Alternatively, use the [composite action](./action.yml) from this repository by 
 ```yml
       - name: action-validator
         uses: mpalmer/action-validator@main # please lock to the latest SHA for secure use
+        with:
+          version: latest # also lock this to a semver without the v prefix for secure use and stability
 ```
 
 ## Using pre-commit

@@ -4,7 +4,7 @@ inputs:
   version:
     description: action-validator version in semver format without the 'v' prefix
     required: false
-    default: "0.8.0"
+    default: "latest"
 branding:
   icon: check
   color: green
@@ -33,18 +33,30 @@ runs:
           macOS) echo "os=darwin" >> "$GITHUB_OUTPUT" ;;
           *) echo "Unsupported OS: $runner_os" >&2; exit 1 ;;
         esac
+    - name: Resolve version
+      id: resolve
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        version: ${{ inputs.version }}
+      run: |
+        if [[ "$version" = "latest" ]]; then
+          tag="$(gh release view --repo mpalmer/action-validator --json tagName -q .tagName)"
+          version="${tag#v}"
+        fi
+        echo "version=$version" >> "$GITHUB_OUTPUT"
     - name: Cache
       id: cache
       uses: actions/cache@v4
       with:
         path: /usr/local/bin/action-validator
-        key: action-validator_v${{ inputs.version }}_${{ steps.os.outputs.os }}_${{ steps.arch.outputs.arch }}
+        key: action-validator_v${{ steps.resolve.outputs.version }}_${{ steps.os.outputs.os }}_${{ steps.arch.outputs.arch }}
     - if: steps.cache.outputs.cache-hit != 'true'
       name: Install
       shell: sh
       env:
         GH_TOKEN: ${{ github.token }}
-        version: ${{ inputs.version }}
+        version: ${{ steps.resolve.outputs.version }}
         os: ${{ steps.os.outputs.os }}
         arch: ${{ steps.arch.outputs.arch }}
         output: /usr/local/bin/action-validator
