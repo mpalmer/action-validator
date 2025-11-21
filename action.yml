@@ -67,4 +67,4 @@ runs:
     - name: Run
       shell: sh
       run: |
-        git ls-files -z ".github/workflows/*.yml" "*/action.yml" ".github/workflows/*.yaml" "*/action.yaml" | xargs -0 action-validator --verbose
+        git ls-files -z ':(glob).github/**/action.yml' '.github/workflows/*.yml' ':(glob).github/**/action.yaml' '.github/workflows/*.yaml' | xargs -0 action-validator --verbose
