@@ -69,7 +69,7 @@ runs:
         arch: ${{ steps.arch.outputs.arch }}
         output: /usr/local/bin/action-validator
       run: |
-        echo "gh release download \"v$version\" --repo mpalmer/action-validator --pattern \"action-validator_${os}_$arch\" --output \"$output\""
+        printf 'gh release download "v%s" --repo mpalmer/action-validator --pattern "action-validator_%s_%s" --output "%s"\n' "$version" "$os" "$arch" "$output"
         gh release download "v$version" --repo mpalmer/action-validator --pattern "action-validator_${os}_$arch" --output "$output"
         chmod +x "$output"
     - name: Run
