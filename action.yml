@@ -5,6 +5,14 @@ inputs:
     description: action-validator version in semver format without the 'v' prefix
     required: false
     default: "latest"
+  patterns:
+    description: 'Newline-separated list of git ls-files patterns'
+    required: false
+    default: |
+      :(glob).github/**/action.yml
+      :(glob).github/**/action.yaml
+      .github/workflows/*.yml
+      .github/workflows/*.yaml
 branding:
   icon: check
   color: green
@@ -66,5 +74,7 @@ runs:
         chmod +x "$output"
     - name: Run
       shell: sh
+      env:
+        patterns: ${{ inputs.patterns }}
       run: |
-        git ls-files -z ':(glob).github/**/action.yml' '.github/workflows/*.yml' ':(glob).github/**/action.yaml' '.github/workflows/*.yaml' | xargs -0 action-validator --verbose
+        printf '%s\n' "$patterns" | xargs -I{} git ls-files -z -- {} | xargs -0 action-validator --verbose
