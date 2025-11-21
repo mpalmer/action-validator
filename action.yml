@@ -77,4 +77,4 @@ runs:
       env:
         patterns: ${{ inputs.patterns }}
       run: |
-        printf '%s\n' "$patterns" | xargs -I{} git ls-files -z -- {} | xargs -0 action-validator --verbose
+        printf '%s\n' "$patterns" | xargs -I{} git ls-files -z -- {} | sort --zero-terminated --unique | xargs -0 action-validator --verbose
