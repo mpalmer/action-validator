@@ -2,19 +2,12 @@ name: Test
 
 on:
   push:
-    # See https://chatgpt.com/c/68f9f77c-6c40-832c-8197-5d5698de0d6e
-    # Currently supported:
-    #  - "*" ✅
-    #  - "**" ✅
-    #  - "?" ✅
-    #  - "+" 🚫
-    #  - "[]" ✅
-    #  - "!" ✅
+    # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#filter-pattern-cheat-sheet
     paths:
       - tests/fixtures/012_github_glob_syntax/subdir/artefact.*
       - tests/fixtures/012_github_glob_syntax/**/artefact.a
       - tests/fixtures/012_github_glob_syntax/subdir/artefact.?
-      # - tests/fixtures/012_github_glob_syntax/subdir/artefact+
+      - tests/fixtures/012_github_glob_syntax/subdir/artefact+
       - tests/fixtures/012_github_glob_syntax/subdir/artefact.[bc]
       - tests/fixtures/012_github_glob_syntax/subdir/[0-9]00
       - '!tests/fixtures/012_github_glob_syntax/subdir/ignore'
