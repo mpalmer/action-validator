@@ -1,0 +1,80 @@
+name: action-validator
+description: Downloads, caches, and runs action-validator with verbose output on files tracked by Git.
+inputs:
+  version:
+    description: action-validator version in semver format without the 'v' prefix
+    required: false
+    default: "latest"
+  patterns:
+    description: 'Newline-separated list of git ls-files patterns'
+    required: false
+    default: |
+      :(glob).github/**/action.yml
+      :(glob).github/**/action.yaml
+      .github/workflows/*.yml
+      .github/workflows/*.yaml
+branding:
+  icon: check
+  color: green
+runs:
+  using: "composite"
+  steps:
+    - name: Convert architecture
+      id: arch
+      shell: sh
+      env:
+        runner_arch: ${{ runner.arch }} # Possible values are X86, X64, ARM, or ARM64.
+      run: |
+        case "$runner_arch" in
+          X64) echo "arch=amd64" >> "$GITHUB_OUTPUT" ;;
+          ARM64) echo "arch=arm64" >> "$GITHUB_OUTPUT" ;;
+          *) echo "Unsupported architecture: $runner_arch" >&2; exit 1 ;;
+        esac
+    - name: Convert OS
+      id: os
+      shell: sh
+      env:
+        runner_os: ${{ runner.os }} # Possible values are Linux, Windows, or macOS.
+      run: |
+        case "$runner_os" in
+          Linux) echo "os=linux" >> "$GITHUB_OUTPUT" ;;
+          macOS) echo "os=darwin" >> "$GITHUB_OUTPUT" ;;
+          *) echo "Unsupported OS: $runner_os" >&2; exit 1 ;;
+        esac
+    - name: Resolve version
+      id: resolve
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        version: ${{ inputs.version }}
+      run: |
+        if [[ "$version" = "latest" ]]; then
+          tag="$(gh release view --repo mpalmer/action-validator --json tagName -q .tagName)"
+          version="${tag#v}"
+        fi
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+    - name: Cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: /usr/local/bin/action-validator
+        key: action-validator_v${{ steps.resolve.outputs.version }}_${{ steps.os.outputs.os }}_${{ steps.arch.outputs.arch }}
+    - if: steps.cache.outputs.cache-hit != 'true'
+      name: Install
+      shell: sh
+      env:
+        GH_TOKEN: ${{ github.token }}
+        version: ${{ steps.resolve.outputs.version }}
+        os: ${{ steps.os.outputs.os }}
+        arch: ${{ steps.arch.outputs.arch }}
+        output: /usr/local/bin/action-validator
+      run: |
+        printf 'gh release download "v%s" --repo mpalmer/action-validator --pattern "action-validator_%s_%s" --output "%s"\n' "$version" "$os" "$arch" "$output"
+        gh release download "v$version" --repo mpalmer/action-validator --pattern "action-validator_${os}_$arch" --output "$output"
+        chmod +x "$output"
+    - name: Run
+      shell: sh
+      env:
+        patterns: ${{ inputs.patterns }}
+      run: |
+        printf '%s\n' "$patterns" | xargs -I{} git ls-files -z -- {} | sort --zero-terminated --unique | xargs -0 action-validator --verbose
