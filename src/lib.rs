@@ -231,6 +231,21 @@ fn validate_globs(
     }
 
     if let Some(globs) = globs.as_array() {
+        let git_files = match system::git::ls_files() {
+            Ok(files) => files,
+            Err(e) => {
+                state.errors.push(ValidationError::InvalidGlob {
+                    code: "git_ls_files_failed".into(),
+                    path: path.into(),
+                    title: "Failed to get git tracked files".into(),
+                    detail: Some(format!("git ls-files failed: {e}")),
+                });
+                return;
+            }
+        };
+
+        let git_file_refs: Vec<&str> = git_files.iter().map(|s| s.as_str()).collect();
+
         for g in globs {
             let glob = g.as_str().expect("glob to be a string");
             let pattern = if glob.starts_with('!') {
@@ -245,9 +260,9 @@ fn validate_globs(
                 pattern
             };
 
-            match system::glob::glob_count_matches(&pattern) {
-                Ok(count) => {
-                    if count == 0 {
+            match compare_changes::path_matches(&pattern, &git_file_refs) {
+                Ok(matched_index) => {
+                    if matched_index.is_none() {
                         state.errors.push(ValidationError::NoFilesMatchingGlob {
                             code: "glob_not_matched".into(),
                             path: path.into(),

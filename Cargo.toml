@@ -9,7 +9,7 @@ include = [
 	"/src/*.rs",
 	"/src/**/*.rs",
 	"/src/schemastore/src/schemas/json/github-workflow.json",
-	"/src/schemastore/src/schemas/json/github-action.json"
+	"/src/schemastore/src/schemas/json/github-action.json",
 ]
 version = "0.0.0-git"
 authors = ["Matt Palmer <matt@hezmatt.org>"]
@@ -28,7 +28,7 @@ test-js = []
 
 [dependencies]
 clap = { version = "4.0", features = ["derive"] }
-glob = "0.3"
+compare-changes = "0.6.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9.17"
