@@ -55,7 +55,7 @@ runs:
         echo "version=$version" >> "$GITHUB_OUTPUT"
     - name: Cache
       id: cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: /usr/local/bin/action-validator
         key: action-validator_v${{ steps.resolve.outputs.version }}_${{ steps.os.outputs.os }}_${{ steps.arch.outputs.arch }}
