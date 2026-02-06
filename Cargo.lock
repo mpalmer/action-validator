@@ -276,9 +276,9 @@ checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 
 [[package]]
 name = "compare-changes"
-version = "0.7.13"
+version = "0.7.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7be66724f97fa7110efc41ed13526d0955cb4a1bb44a56fd8737dbe7eb09916f"
+checksum = "99e43f431041e58f2dbdc403ee66e394e95090a19224bce1c9f84f12fb68aec1"
 dependencies = [
  "chumsky",
  "regex",
