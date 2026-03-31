@@ -1,0 +1,22 @@
+name: Test environment deployment
+
+on:
+  push:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://example.com
+      deployment: false
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo "deploying"
+
+  deploy-string:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo "deploying"
