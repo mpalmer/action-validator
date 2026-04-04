@@ -157,7 +157,7 @@ pub mod cli {
 
 fn run(config: &RunConfig) -> ValidationState {
     let file_name = config.file_name.unwrap_or("file");
-    let doc = serde_yaml::from_str(config.src);
+    let doc = yaml_serde::from_str(config.src);
 
     let mut state = match doc {
         Err(err) => ValidationState {

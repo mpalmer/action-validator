@@ -12,8 +12,8 @@ pub struct ParseErrorLocation {
     pub column: usize,
 }
 
-impl From<serde_yaml::Location> for ParseErrorLocation {
-    fn from(location: serde_yaml::Location) -> Self {
+impl From<yaml_serde::Location> for ParseErrorLocation {
+    fn from(location: yaml_serde::Location) -> Self {
         ParseErrorLocation {
             index: location.index(),
             line: location.line(),
@@ -136,8 +136,8 @@ impl_from_valico_error!(
     err => Unevaluated
 );
 
-impl From<serde_yaml::Error> for ValidationError {
-    fn from(err: serde_yaml::Error) -> Self {
+impl From<yaml_serde::Error> for ValidationError {
+    fn from(err: yaml_serde::Error) -> Self {
         ValidationError::Parse {
             code: "parse_error".into(),
             detail: Some(err.to_string()),

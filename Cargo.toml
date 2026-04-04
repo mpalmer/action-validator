@@ -31,7 +31,7 @@ clap = { version = "4.0", features = ["derive"] }
 glob = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serde_yaml = "0.9.17"
+yaml_serde = "0.10"
 valico = "4.0"
 
 wasm-bindgen = "0.2.84"
