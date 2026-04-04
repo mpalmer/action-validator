@@ -1,7 +1,14 @@
 use std::process::Command;
 
 pub fn ls_files() -> Result<Vec<String>, std::io::Error> {
-    let output = Command::new("git").args(["ls-files", "-z"]).output()?;
+    ls_files_with_pathspecs(&[])
+}
+
+pub fn ls_files_with_pathspecs(pathspecs: &[&str]) -> Result<Vec<String>, std::io::Error> {
+    let output = Command::new("git")
+        .args(["ls-files", "-z"])
+        .args(pathspecs)
+        .output()?;
 
     if !output.status.success() {
         return Err(std::io::Error::other(format!(

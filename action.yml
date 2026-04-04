@@ -8,7 +8,7 @@ inputs:
   patterns:
     description: 'Newline-separated list of git ls-files patterns'
     required: false
-    default: |
+    default: | # If you update this list, also update src/lib.rs
       :(glob).github/**/action.yml
       :(glob).github/**/action.yaml
       .github/workflows/*.yml

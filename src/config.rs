@@ -19,6 +19,10 @@ pub struct CliConfig {
     )]
     pub rootdir: Option<PathBuf>,
 
+    /// Automatically find and validate GitHub Actions files via git
+    #[arg(long)]
+    pub auto: bool,
+
     /// Input file
     #[arg(name = "path_to_action_yaml")]
     pub src: Vec<PathBuf>,

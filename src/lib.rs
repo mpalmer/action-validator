@@ -89,6 +89,8 @@ mod js {
 }
 
 pub mod cli {
+    use std::path::PathBuf;
+
     use crate::{
         config::{ActionType, RunConfig},
         system, CliConfig,
@@ -102,7 +104,41 @@ pub mod cli {
     pub fn run(config: &CliConfig) -> RunResult {
         let mut success = true;
 
-        for path in &config.src {
+        let mut paths: Vec<PathBuf> = Vec::new();
+
+        if config.auto {
+            const AUTO_PATHSPECS: &[&str] = &[
+                // If you update this list, also update action.yml
+                ":(glob).github/**/action.yml",
+                ":(glob).github/**/action.yaml",
+                ".github/workflows/*.yml",
+                ".github/workflows/*.yaml",
+            ];
+
+            match system::git::ls_files_with_pathspecs(AUTO_PATHSPECS) {
+                Ok(files) => {
+                    paths.extend(files.into_iter().map(PathBuf::from));
+                }
+                Err(err) => {
+                    system::console::error(&format!("Failed to discover files: {err}"));
+                    return RunResult::Failure;
+                }
+            }
+        }
+
+        paths.extend_from_slice(&config.src);
+
+        if paths.is_empty() {
+            if config.auto {
+                return RunResult::Success;
+            }
+            system::console::error(
+                "No input files. Provide file paths and/or use --auto to discover them.",
+            );
+            return RunResult::Failure;
+        }
+
+        for path in &paths {
             let file_name = match path.file_name() {
                 Some(file_name) => file_name.to_str(),
                 None => {
