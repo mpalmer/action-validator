@@ -31,6 +31,12 @@ jobs:
         with:
           submodules: true
 
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_target }}
+
       - name: Cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -39,12 +45,6 @@ jobs:
             ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-${{ matrix.rust_target }}-binary-release
-
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.rust_target }}
 
       - name: Set Cargo.toml version
         if: github.event_name == 'release'
@@ -86,6 +86,10 @@ jobs:
         with:
           submodules: true
 
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -94,10 +98,6 @@ jobs:
             ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-crate-release
-
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
 
       - name: Set Cargo.toml version
         if: github.event_name == 'release'
@@ -132,6 +132,11 @@ jobs:
         with:
           submodules: true
 
+      - name: Install rust
+        if: matrix.package-dir == 'packages/core'
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -140,11 +145,6 @@ jobs:
             ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-npm-${{ matrix.package-dir }}-release
-
-      - name: Install rust
-        if: matrix.package-dir == 'packages/core'
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
 
       - name: Setup Node
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0

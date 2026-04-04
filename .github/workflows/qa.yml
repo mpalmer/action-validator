@@ -24,6 +24,10 @@ jobs:
         with:
           submodules: true
 
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -32,10 +36,6 @@ jobs:
             ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-check
-
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
 
       - name: Check Formatting
         run: |
@@ -91,6 +91,12 @@ jobs:
         with:
           submodules: true
 
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-toolchain }}
+
       - name: Cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -99,12 +105,6 @@ jobs:
             ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-build
-
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust-toolchain }}
 
       - name: Build
         run: |
@@ -127,6 +127,12 @@ jobs:
         with:
           submodules: true
 
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust-toolchain }}
+
       - name: Cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -135,12 +141,6 @@ jobs:
             ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-test
-
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust-toolchain }}
 
       - name: Run Testsuite
         run: |
@@ -155,6 +155,10 @@ jobs:
         with:
           submodules: true
 
+      - name: Install rust
+        id: rust-install
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
@@ -163,10 +167,6 @@ jobs:
             ~/.rustup
             target/
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-test-node
-
-      - name: Install rust
-        id: rust-install
-        uses: dtolnay/rust-toolchain@stable
 
       - name: Setup Node
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
