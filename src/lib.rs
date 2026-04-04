@@ -204,7 +204,17 @@ fn run(config: &RunConfig) -> ValidationState {
         Ok(doc) => match config.action_type {
             ActionType::Action => {
                 if config.verbose {
-                    system::console::log(&format!("Treating {file_name} as an Action definition"));
+                    let display_name = config
+                        .file_path
+                        .and_then(|p| {
+                            let path = std::path::Path::new(p);
+                            let parent = path.parent()?.file_name()?.to_str()?;
+                            Some(format!("{parent}/{file_name}"))
+                        })
+                        .unwrap_or_else(|| file_name.to_string());
+                    system::console::log(&format!(
+                        "Treating {display_name} as an Action definition"
+                    ));
                 }
                 validate_as_action(&doc)
             }
