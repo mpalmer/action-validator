@@ -57,10 +57,14 @@ jobs:
           mv Cargo.lock Cargo.lock.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
 
+      - name: Install cross-build helper packages
+        run: |
+          sudo apt update
+          sudo apt install musl-tools
+
       - name: Install cross-compile linker for aarch64-unknown-linux-musl
         if: matrix.rust_target == 'aarch64-unknown-linux-musl'
         run: |
-          sudo apt update
           sudo apt install gcc-aarch64-linux-gnu
 
       - name: Build
@@ -70,6 +74,7 @@ jobs:
           cargo +${{ steps.rust-install.outputs.name }} build --target ${{ matrix.rust_target }} --release --locked
 
       - name: Upload
+        if: github.event_name == 'release'
         uses: svenstaro/upload-release-action@9f7ceffe1410bbe7e95b7902af89c91da4d1dc0a # 2.11.4
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
