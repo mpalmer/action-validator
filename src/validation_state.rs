@@ -12,7 +12,6 @@ pub struct ValidationState {
 }
 
 impl ValidationState {
-    #[allow(dead_code)]
     pub fn is_valid(&self) -> bool {
         self.errors.is_empty()
     }

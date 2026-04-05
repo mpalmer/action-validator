@@ -1,8 +1,3 @@
-// The below functions have duplicate implementations for WASM and non-WASM targets.
-// Each target might not use all of the functions, but they are all defined for both targets
-// for simplicity.
-#![allow(dead_code)]
-
 use std::path::Path;
 
 #[cfg(feature = "js")]

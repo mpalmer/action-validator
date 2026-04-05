@@ -1,8 +1,3 @@
-// The below functions have duplicate implementations for WASM and non-WASM targets.
-// Each target might not use all of the functions, but they are all defined for both targets
-// for simplicity.
-#![allow(dead_code)]
-
 #[cfg(feature = "js")]
 mod js_process {
     use wasm_bindgen::prelude::*;
@@ -21,11 +16,6 @@ mod js_process {
 pub fn exit(code: i32) -> ! {
     js_process::exit(code);
     unreachable!();
-}
-
-#[cfg(not(feature = "js"))]
-pub fn exit(code: i32) -> ! {
-    std::process::exit(code);
 }
 
 pub mod stdout {
