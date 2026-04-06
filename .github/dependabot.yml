@@ -3,6 +3,7 @@
 
 version: 2
 updates:
+# cargo dependencies are not managed here because dependabot does not respect the minimum supported rust version
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -13,3 +14,4 @@ updates:
       github-actions:
         patterns:
           - "*"
+# git submodules are not managed here because it can't be scoped to the specific files we're interested in
