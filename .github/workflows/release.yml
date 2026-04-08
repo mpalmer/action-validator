@@ -1,12 +1,33 @@
 name: Upload release artifacts
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-tags: true
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+        run: |
+          set -x
+          title="$(git tag -l --format='%(contents:subject)' "$tag")"
+          notes="$(git tag -l --format='%(contents:body)' "$tag")"
+
+          gh release create "$tag" --title "$title" --notes "$notes" --draft
+
   binaries:
+    needs: draft-release
     strategy:
       fail-fast: false
       matrix:
@@ -48,7 +69,7 @@ jobs:
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-${{ matrix.rust_target }}-binary-release
 
       - name: Set Cargo.toml version
-        if: github.event_name == 'release'
+        if: github.event_name == 'push'
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref }}
@@ -79,15 +100,17 @@ jobs:
           cargo +${{ steps.rust-install.outputs.name }} build --target ${{ matrix.rust_target }} --release --locked
 
       - name: Upload
-        if: github.event_name == 'release'
-        uses: svenstaro/upload-release-action@9f7ceffe1410bbe7e95b7902af89c91da4d1dc0a # 2.11.4
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          file: target/${{ matrix.rust_target }}/release/action-validator
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          binary: target/${{ matrix.rust_target }}/release/action-validator
           asset_name: ${{ matrix.asset_name }}
+        run: |
+          mv "$binary" "$asset_name"
+          gh release upload "$tag" "$asset_name"
 
   crate:
+    needs: binaries
     runs-on: ubuntu-latest
 
     steps:
@@ -110,7 +133,7 @@ jobs:
           key: ${{ runner.os }}-${{ steps.rust-install.outputs.cachekey }}-crate-release
 
       - name: Set Cargo.toml version
-        if: github.event_name == 'release'
+        if: github.event_name == 'push'
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref }}
@@ -121,13 +144,14 @@ jobs:
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
 
       - name: Publish crate
-        if: github.event_name == 'release'
+        if: github.event_name == 'push'
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
         run: |
           cargo publish --allow-dirty
 
   npm:
+    needs: binaries
     strategy:
       matrix:
         package-dir:
@@ -176,7 +200,7 @@ jobs:
         run: npm ci
 
       - name: Set package.json version
-        if: github.event_name == 'release'
+        if: github.event_name == 'push'
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref }}
@@ -195,8 +219,23 @@ jobs:
           cp LICENCE $PACKAGE_DIR/LICENCE
 
       - name: Publish NPM
-        if: github.event_name == 'release'
+        if: github.event_name == 'push'
         run: npm publish --access public
         working-directory: ${{ matrix.package-dir }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-release:
+    needs:
+      - binaries
+      - crate
+      - npm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release edit "$tag" --draft=false
