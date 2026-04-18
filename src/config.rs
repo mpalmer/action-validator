@@ -19,6 +19,10 @@ pub struct CliConfig {
     )]
     pub rootdir: Option<PathBuf>,
 
+    /// Perform remote network checks to verify referenced actions/images exist
+    #[arg(long)]
+    pub allow_remote_checks: bool,
+
     /// Input file
     #[arg(name = "path_to_action_yaml")]
     pub src: Vec<PathBuf>,
@@ -45,6 +49,7 @@ pub struct RunConfig<'a> {
     pub src: &'a str,
     pub verbose: bool,
     pub rootdir: Option<PathBuf>,
+    pub allow_remote_checks: bool,
 }
 
 impl<'a> From<&JsConfig<'a>> for RunConfig<'a> {
@@ -56,6 +61,7 @@ impl<'a> From<&JsConfig<'a>> for RunConfig<'a> {
             src: config.src,
             verbose: config.verbose,
             rootdir: None,
+            allow_remote_checks: false,
         }
     }
 }

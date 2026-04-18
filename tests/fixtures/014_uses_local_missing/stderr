@@ -1,0 +1,18 @@
+Validation failed: ValidationState {
+    action_type: Some(
+        Workflow,
+    ),
+    file_path: Some(
+        "tests/fixtures/014_uses_local_missing/test.yml",
+    ),
+    errors: [
+        UnresolvedAction {
+            code: "unresolved_action",
+            detail: Some(
+                "Local action path `./.github/actions/does-not-exist` was not found (looked for `tests/fixtures/014_uses_local_missing/./.github/actions/does-not-exist`).",
+            ),
+            path: "/jobs/build/steps/0/uses",
+            title: "Local action path does not exist",
+        },
+    ],
+}

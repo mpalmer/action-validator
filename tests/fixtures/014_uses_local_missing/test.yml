@@ -1,0 +1,11 @@
+name: Unresolved local action path
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Missing local action
+        uses: ./.github/actions/does-not-exist

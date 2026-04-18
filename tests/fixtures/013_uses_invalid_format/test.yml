@@ -1,0 +1,17 @@
+name: Invalid uses references
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Missing ref
+        uses: actions/checkout
+
+      - name: Bare owner
+        uses: actions@v1
+
+      - name: Empty docker
+        uses: "docker://"

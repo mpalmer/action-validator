@@ -1,0 +1,7 @@
+{
+  "cli_args": [
+    "--rootdir",
+    "tests/fixtures/012_uses_ok",
+    "tests/fixtures/012_uses_ok/test.yml"
+  ]
+}

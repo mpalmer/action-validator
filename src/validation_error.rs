@@ -73,6 +73,9 @@ validation_errors!(
     UnresolvedJob,
     InvalidGlob,
     NoFilesMatchingGlob,
+    InvalidActionFormat,
+    UnresolvedAction,
+    RemoteCheckSkipped,
     // Other Errors
     Parse { location: Option<ParseErrorLocation> }
 );
