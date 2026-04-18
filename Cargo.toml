@@ -47,9 +47,13 @@ js-sys = "0.3.77"
 is-terminal = "0.4.7"
 assert_cmd = { version = "2.1.1", optional = true }
 
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
+reqwest = { version = "0.13", default-features = false, features = ["blocking", "rustls"] }
+
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
 fixtures = "2.5.0"
+httpmock = "0.8"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

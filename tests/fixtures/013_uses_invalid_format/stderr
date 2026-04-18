@@ -1,0 +1,34 @@
+Validation failed: ValidationState {
+    action_type: Some(
+        Workflow,
+    ),
+    file_path: Some(
+        "{{repo}}/tests/fixtures/013_uses_invalid_format/test.yml",
+    ),
+    errors: [
+        InvalidActionFormat {
+            code: "invalid_action_format",
+            detail: Some(
+                "`actions/checkout` is not a valid uses reference. Expected `owner/repo[/path]@ref`, `docker://image`, or `./local/path`.",
+            ),
+            path: "/jobs/build/steps/0/uses",
+            title: "Invalid `uses` value",
+        },
+        InvalidActionFormat {
+            code: "invalid_action_format",
+            detail: Some(
+                "`actions@v1` is not a valid uses reference. Expected `owner/repo[/path]@ref`, `docker://image`, or `./local/path`.",
+            ),
+            path: "/jobs/build/steps/1/uses",
+            title: "Invalid `uses` value",
+        },
+        InvalidActionFormat {
+            code: "invalid_action_format",
+            detail: Some(
+                "`docker://` is not a valid uses reference. Expected `owner/repo[/path]@ref`, `docker://image`, or `./local/path`.",
+            ),
+            path: "/jobs/build/steps/2/uses",
+            title: "Invalid `uses` value",
+        },
+    ],
+}

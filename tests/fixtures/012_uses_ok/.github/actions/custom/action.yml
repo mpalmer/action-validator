@@ -1,0 +1,7 @@
+name: Custom composite
+description: Stub composite action used by fixture 012
+runs:
+  using: composite
+  steps:
+    - run: echo hello
+      shell: bash

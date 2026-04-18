@@ -1,0 +1,20 @@
+name: Uses references are well-formed
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Local composite
+        uses: ./.github/actions/custom
+
+      - name: Docker image
+        uses: docker://alpine:3.18
+
+      - name: Subpath action
+        uses: actions/aws-actions/configure-credentials/auth@v1

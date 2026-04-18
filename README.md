@@ -115,6 +115,34 @@ action-validator .github/workflows/build.yml
 Use `action-validator -h` to see additional options.
 
 
+## Validating `uses:` references
+
+By default, `action-validator` checks that every `uses:` string in your
+workflows and composite actions is well-formed (`owner/repo[/path]@ref`,
+`docker://image`, or `./local/path`) and that any local `./` paths actually
+exist on disk.
+
+Pass `--allow-remote-checks` to additionally verify that referenced GitHub
+actions exist remotely. When the flag is set, `action-validator` issues HEAD
+requests to `api.github.com` to confirm that the referenced repository and git
+ref resolve. Because this requires network access, it is opt-in.
+
+```shell
+action-validator --allow-remote-checks .github/workflows/build.yml
+```
+
+Current limitations of remote checks:
+
+- Docker image existence checks are not yet implemented; a warning is recorded
+  in the validation state when a `docker://` reference is encountered.
+- Private GitHub actions can't be reached without authentication; responses
+  that require auth (401/403) are treated as "assume exists" to avoid false
+  positives.
+- When the flag is not set, remote references are recorded as skipped checks
+  in the `warnings` field of the validation state — they never cause the
+  validator to exit non-zero.
+
+
 ## In a GitHub Action
 
 The action-validator can be run in a Github action itself, as a pull request job. See the `actions` job in the [QA workflow](https://github.com/mpalmer/action-validator/tree/main/.github/workflows/qa.yml), in this repository, as an example of how to use action-validator + asdf in a GitHub workflow.

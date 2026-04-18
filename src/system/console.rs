@@ -9,6 +9,9 @@ mod js_console {
 
         #[wasm_bindgen(js_namespace = console, js_name = error)]
         pub fn error(s: &str);
+
+        #[wasm_bindgen(js_namespace = console, js_name = warn)]
+        pub fn warn(s: &str);
     }
 }
 
@@ -29,5 +32,15 @@ pub fn error(s: &str) {
 
 #[cfg(not(feature = "js"))]
 pub fn error(s: &str) {
+    eprintln!("{s}");
+}
+
+#[cfg(feature = "js")]
+pub fn warn(s: &str) {
+    js_console::warn(s);
+}
+
+#[cfg(not(feature = "js"))]
+pub fn warn(s: &str) {
     eprintln!("{s}");
 }
